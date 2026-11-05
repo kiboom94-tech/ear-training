@@ -7,6 +7,8 @@
 - 악보 표시: `vendor/vexflow.js` (VexFlow 4, 전역 `Vex.Flow`)
 - 기록 저장: localStorage (`eartr_` 접두어)
 - 빌드 도구 없음. 정적 파일만으로 GitHub Pages에서 동작해야 한다.
+- 화면 자동 확인: `tools/shot.mjs`(캡처), `tools/flow.mjs`(모든 탭×난이도×PC·휴대폰 실행 테스트). 사용법은 `tools/README.md`.
+- 기록을 기기 간에 공유하는 방안은 `docs/기록-동기화-방안.md`에 정리되어 있다(아직 구현 안 함).
 
 ## 목표 구조 (리팩터링)
 기능은 그대로 유지하면서 한 파일을 아래처럼 나눈다. 빌드 도구 없이 `<script type="module">`로 불러온다.
