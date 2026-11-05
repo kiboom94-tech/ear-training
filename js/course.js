@@ -53,7 +53,9 @@ const TRACKS=[
   {t:'붙임줄 · 박을 넘는 당김음',d:'Tie · Syncopation',base:3,...RS(['h','q','qd','8','16','rest','tie','sync'],['4/4','2/2'],'2'),pass:.75},
   {t:'박자 변화',d:'4/4 · 3/4 · 2/4가 마디마다 바뀜 (Mixed Meter)',base:3,...RS(['h','q','8','16','rest'],['4/4','3/4','2/4'],'4',{'rh-mixed':true}),pass:.75},
   {t:'변박',d:'5/8 · 7/8 · 5/4 (Odd Meter)',base:4,...RS(['q','qd','8','16','rest'],['5/8','7/8','5/4'],'2'),pass:.7},
-  {t:'종합 4마디',d:'모든 음표 · 셋잇단 · 박자 변화',base:4,...RS(NV_BASIC,['4/4','3/4','6/8','2/2','7/8'],'4',{'rh-mixed':true,'rh-restp':'0.2'}),pass:.7}]},
+  {t:'종합 4마디',d:'모든 음표 · 셋잇단 · 박자 변화',base:4,...RS(NV_BASIC,['4/4','3/4','6/8','2/2','7/8'],'4',{'rh-mixed':true,'rh-restp':'0.2'}),pass:.7},
+  {t:'연음 듣기: 3·5·6·7연음',d:'빠른 입력 · Tuplets',base:4,...RP(['q','ee','ssss','t3','t5','t6','t7'],['4/4'],'2'),pass:.75},
+  {t:'악보 입력: 5·6·7연음',d:'연음 버튼으로 직접 채우기 (Score)',base:4,...RS(['q','8','16','trip','t5','t6','t7','rest'],['4/4','2/4'],'2'),pass:.7}]},
  {mode:'prog',name:'코드 진행 (Progression)',stages:[
   {t:'I · IV · V',d:'으뜸·버금딸림·딸림화음',base:1,vals:{'pg-src':'random','pg-mode':'major'}},
   {t:'다이아토닉 3화음',d:'Diatonic Triads, 무작위',base:1,checks:{'#pg-vocab':['I','ii','iii','IV','V','vi']},vals:{'pg-src':'random','pg-mode':'major','pg-len':4}},
@@ -79,8 +81,12 @@ function renderDailyChip(){const el=$('#daily-chip');if(el)el.innerHTML=`오늘 
 const stState=id=>course.st[id]||{h:[],cleared:false,best:0};
 const avgLast=(h,n)=>{const x=h.slice(-n);return x.length?x.reduce((a,b)=>a+b,0)/x.length:0;};
 function unlocked(s){return course.unlockAll||!s.prev||stState(s.prev).cleared;}
+const MASTER_NEED=0.5; /* 통과하려면 단계에서 3번 이상 나온 항목 중 이 비율 이상이 '익힘'이어야 함 */
+function courseTouch(m,k){const a=course.active&&STAGE[course.active];if(!a||a.mode!==m)return;const p=course.st[a.id]=stState(a.id);p.keys=p.keys||[];if(!p.keys.includes(k)){p.keys.push(k);if(p.keys.length>200)p.keys.shift();}}
+function stageMastery(s){const p=stState(s.id);const ks=(p.keys||[]).filter(k=>{const it=(adapt[s.mode]||{items:{}}).items[k];return it&&it.t>=3;});
+  if(!ks.length)return {r:1,n:0,k:0};const k=ks.filter(x=>['known','review'].includes(adaptState(s.mode,x))).length;return {r:k/ks.length,n:ks.length,k};}
 function courseRecord(mode,score){const a=course.active&&STAGE[course.active];if(!a||a.mode!==mode)return;const p=course.st[a.id]=stState(a.id);p.h.push(score);if(p.h.length>a.need*3)p.h=p.h.slice(-a.need*3);
-  if(p.h.length>=a.need){const av=avgLast(p.h,a.need);p.best=Math.max(p.best||0,av);if(!p.cleared&&av>=a.pass){p.cleared=true;p.justCleared=true;}}saveCourse();renderBanner(mode);}
+  if(p.h.length>=a.need){const av=avgLast(p.h,a.need);p.best=Math.max(p.best||0,av);if(!p.cleared&&av>=a.pass&&stageMastery(a).r>=MASTER_NEED){p.cleared=true;p.justCleared=true;}}saveCourse();renderBanner(mode);}
 function startStage(id){const s=STAGE[id];if(!s)return;const m=s.mode;quiet=true;
   PRESETS[m](s.base||1);const v=s.vals||{};
   if(v['pg-mode']){$('#pg-mode').value=v['pg-mode'];buildVocab();}
@@ -93,7 +99,7 @@ function exitCourse(){const a=course.active&&STAGE[course.active];course.active=
 function renderBanner(mode){const el=$('#cb-'+mode);if(!el)return;const a=course.active&&STAGE[course.active];if(!a||a.mode!==mode){el.hidden=true;el.innerHTML='';return;}
   const p=stState(a.id);const n=Math.min(p.h.length,a.need);const av=Math.round(avgLast(p.h,a.need)*100);el.hidden=false;
   const msg=p.justCleared?`<div class="cleared">통과했어요! ${a.next?'다음 단계가 열렸어요.':'이 트랙을 모두 마쳤어요.'}</div>`:'';if(p.justCleared){p.justCleared=false;saveCourse();}
-  el.innerHTML=`<div class="cb-main"><b>코스 · ${a.trackName} ${a.idx+1}단계</b> ${a.t}<div class="mini">${n} / ${a.need}문제 · 최근 ${a.need}문제 정답률 ${p.h.length?av+'%':'–'} · 통과 기준 ${Math.round(a.pass*100)}%${p.cleared?' · <b style="color:var(--good)">통과</b>':''}</div>
+  el.innerHTML=`<div class="cb-main"><b>코스 · ${a.trackName} ${a.idx+1}단계</b> ${a.t}<div class="mini">${n} / ${a.need}문제 · 최근 ${a.need}문제 정답률 ${p.h.length?av+'%':'–'} · 통과 기준 ${Math.round(a.pass*100)}%${(()=>{const ms=stageMastery(a);return ms.n?` · 익힘 ${ms.k}/${ms.n}개 (절반 이상 필요)`:'';})()}${p.cleared?' · <b style="color:var(--good)">통과</b>':''}</div>
     <div class="meter" style="margin-top:6px"><i style="width:${n/a.need*100}%"></i></div>${msg}</div>
     <div class="controls" style="margin:0">${p.cleared&&a.next?`<button class="btn primary" data-act="next">다음 단계</button>`:''}<button class="btn" data-act="list">코스 목록</button><button class="btn ghost" data-act="exit">코스 나가기</button></div>`;
   el.onclick=e=>{const b=e.target.closest('[data-act]');if(!b)return;const act=b.dataset.act;if(act==='next')startStage(a.next);else if(act==='list')showTab('course');else exitCourse();};}

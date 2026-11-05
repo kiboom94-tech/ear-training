@@ -35,7 +35,7 @@ const KSN={G:1,D:2,A:3,E:4,B:5,'F#':6,'C#':7,F:1,Bb:2,Eb:3,Ab:4,Db:5,Gb:6,Cb:7};
 function drawMeasures(el,{clef='treble',keySig='C',timeSig='4/4',measures,title,onPick}){
   if(!VF()){el.innerHTML='';return;}const F=VF();if(!measures.length)measures=[[]];
   const W=Math.max(300,(el.parentElement&&el.parentElement.clientWidth||640)-12);
-  const first=78+10*(KSN[keySig]||0)+(timeSig?28:0);const mw=m=>Math.max(100,30+m.length*40);
+  const mob=W<420;const first=(mob?66:78)+(mob?8:10)*(KSN[keySig]||0)+(timeSig?(mob?22:28):0);const mw=m=>Math.max(mob?70:100,(mob?20:30)+m.length*(mob?27:40));
   const rows=[];let row=[],rw=0;
   measures.forEach(m=>{let w=mw(m)+(row.length?0:first);if(row.length&&rw+w>W-10){rows.push(row);row=[];rw=0;w=mw(m)+first;}row.push({m,w});rw+=w;});
   if(row.length)rows.push(row);

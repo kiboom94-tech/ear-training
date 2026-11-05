@@ -102,7 +102,7 @@ function pgPlayList(list,withRef,highlight){stopAll();let t=now();const spb=60/b
   if(withRef){const q=G.q;const tv=progVoicings(q.key,[VOCAB[q.mode].find(v=>v.id===(q.mode==='major'?'I':'i'))])[0];chordAt(tv,t,1.2);t+=1.8;}
   const t0=ac().currentTime;list.forEach((notes,i)=>{if(notes){chordAt(notes,t,dur*0.92);}if(highlight){const s=t-t0;at(s,()=>{$$('#pg-slots .slot').forEach((e,j)=>e.classList.toggle('playing',j===i));});}t+=dur;});
   if(highlight)at(t-t0,()=>$$('#pg-slots .playing').forEach(e=>e.classList.remove('playing')));}
-function pgNew(){stopAll();const q=G.q=genProg();q.voicings=progVoicings(q.key,q.seq);G.ans=q.seq.map(()=>null);G.cur=0;G.checked=false;
+function pgNew(){stopAll();const q=G.q=takeReplay('prog')||genProg();q.voicings=progVoicings(q.key,q.seq);G.ans=q.seq.map(()=>null);G.cur=0;G.checked=false;
   if($('#pg-start').checked){G.ans[0]=q.seq[0].id;G.cur=1;}
   $('#pg-meta').innerHTML=`키 (Key) <b>${pcName(q.key,q.flat)} ${q.mode==='major'?'메이저 (Major)':'마이너 (Minor)'}</b> · 코드 ${q.seq.length}개${q.prog?' · 장르 진행 (Common Progression)':''}`;
   const groups=groupBy(q.pool,v=>v.cat);
@@ -112,6 +112,8 @@ function pgNew(){stopAll();const q=G.q=genProg();q.voicings=progVoicings(q.key,q
     pgPlayList([progVoicings(q.key,[v])[0]],false,false);G.cur=Math.min(G.cur+1,q.seq.length-1);const nxt=G.ans.findIndex(a=>a==null);if(nxt>=0)G.cur=nxt;pgSlots();};
   pgSlots();$('#pg-fb').innerHTML='';$('#pg-fb').className='feedback';$('#pg-cmp').innerHTML='';clearStaff($('#pg-staff'));
   {const all=q.voicings.flat();needRange(Math.min(...all),Math.max(...all));}autoPlay(()=>pgPlayList(q.voicings,$('#pg-ref').checked,true));}
+/* 베이스만 듣기: 각 코드의 맨 아래 음을 옥타브로 겹쳐 들려준다 (진행 받아쓰기의 첫 힌트) */
+function pgBass(){const q=G.q;if(!q)return;pgPlayList(q.voicings.map(v=>[v[0],v[0]+12]),false,true);}
 function pgBack(){if(!G.q||G.checked)return;const min=$('#pg-start').checked?1:0;let i=G.ans.length-1;while(i>=min&&G.ans[i]==null)i--;if(i<min)return;G.ans[i]=null;G.cur=i;pgSlots();}
 function pgClear(){if(!G.q||G.checked)return;const g=$('#pg-start').checked;G.ans=G.q.seq.map((v,i)=>(g&&i===0)?v.id:null);G.cur=g?1:0;pgSlots();}
 function pgSlots(res){const q=G.q;$('#pg-slots').innerHTML=q.seq.map((v,i)=>{const a=G.ans[i];const av=a&&q.pool.find(x=>x.id===a);let cls='slot rslot';if(!a)cls+=' empty';if(i===G.cur&&!G.checked)cls+=' cur';if(res)cls+=res[i]?' right':' wrong';else if(i===0&&$('#pg-start').checked)cls+=' given';

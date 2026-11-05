@@ -67,15 +67,21 @@ function synthPiano(m,t,dur,vel=0.7){mark(t+dur);
   active.push(g);
 }
 /* 리듬 문제 소리: 부드러운 나무 건반(마림바풍) 기본, 울림 없음 */
-function mallet(t,accent,f){const c=ac();const out=c.createGain();out.connect(drumBus||master);const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2600;lp.connect(out);
+function mallet(t,accent,f,vol=1){const c=ac();const out=c.createGain();out.connect(drumBus||master);const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2600;lp.connect(out);
   [[1,1,0.32],[3.93,0.18,0.06],[9.2,0.04,0.02]].forEach(([h,a,d])=>{const o=c.createOscillator();o.type='sine';o.frequency.value=f*h;const g=c.createGain();
-    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(a*(accent?0.6:0.48),t+0.003);g.gain.exponentialRampToValueAtTime(0.0001,t+d+0.05);o.connect(g);g.connect(lp);o.start(t);o.stop(t+d+0.1);});
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(0.0002,a*(accent?0.6:0.48)*vol),t+0.003);g.gain.exponentialRampToValueAtTime(0.0001,t+d+0.05);o.connect(g);g.connect(lp);o.start(t);o.stop(t+d+0.1);});
   active.push(out);}
 function hit(t,accent=false){mark(t+0.15);const s=rhSound();
   if(s==='mallet')return mallet(t,accent,392);if(s==='low')return mallet(t,accent,196);
   if(drum(s,t,accent?0.8:0.65))return;mallet(t,accent,392);}
 /* 메트로놈: 기본 전자 메트로놈 '삑' 소리. vol로 크기 조절 (예비박은 크게, 문제 중에는 점점 작게) */
-function click(t,accent,vol=1){mark(t+0.05);const c=ac();const o=c.createOscillator();o.type='square';o.frequency.value=accent?1600:1050;
+/* 메트로놈 음색 (⚙ 메뉴): 삑(기본) · 우드블록 · 하이햇 · 스틱(스네어 가장자리 느낌) */
+function clickSound(){const el=document.getElementById('g-click');return el&&el.value?el.value:'beep';}
+function click(t,accent,vol=1){const cs=clickSound();
+  if(cs==='wood'){mark(t+0.1);return mallet(t,accent,accent?1480:1100,vol);}
+  if(cs==='hihat'&&drum('hihat',t,(accent?0.75:0.5)*vol)){mark(t+0.1);return;}
+  if(cs==='stick'&&drum('snare',t,(accent?0.5:0.32)*vol)){mark(t+0.1);return;}
+  mark(t+0.05);const c=ac();const o=c.createOscillator();o.type='square';o.frequency.value=accent?1600:1050;
   const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3200;const g=c.createGain();const pk=(accent?0.2:0.14)*vol;
   g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(pk,0.0002),t+0.002);g.gain.exponentialRampToValueAtTime(0.0001,t+0.035);
   o.connect(lp);lp.connect(g);g.connect(drumBus||master);o.start(t);o.stop(t+0.05);active.push(g);}

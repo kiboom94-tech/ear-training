@@ -20,7 +20,21 @@ function record(mode,item,ok){
   if(item!=null){s.t++;if(ok)s.c++;const it=s.items[item]=s.items[item]||{c:0,t:0};it.t++;if(ok)it.c++;}
   store.set('stats',stats);
 }
-function sessAdd(mode,ok,score){adaptTick(mode,ok);const s=sess[mode]=sess[mode]||{c:0,t:0,streak:0};s.t++;if(ok){s.c++;s.streak++;}else s.streak=0;showScore(mode);bumpDaily();courseRecord(mode,score==null?(ok?1:0):score);}
+/* 문제 하나를 채점할 때마다: 적응 기록, 반응 시간, 날짜별 기록, 틀린 문제 저장, 코스, 동기화 */
+function sessAdd(mode,ok,score){const rt=rtNow(mode);adaptTick(mode,ok,rt);histAdd(mode,ok,rt);SLOWNOW=false;
+  const s=sess[mode]=sess[mode]||{c:0,t:0,streak:0};s.t++;if(ok){s.c++;s.streak++;}else s.streak=0;showScore(mode);bumpDaily();courseRecord(mode,score==null?(ok?1:0):score);
+  if(typeof reviewAfter==='function')reviewAfter(mode,ok);if(typeof syncSoon==='function')syncSoon();}
+/* ---- 반응 시간: 문제가 처음 나온(소리가 나기 시작한) 때부터 채점까지 ---- */
+const QSTART={};
+const qStart=m=>{QSTART[m]=SILENT?null:Date.now();};
+function rtNow(m){if(!QSTART[m])return null;return Math.min(600,(Date.now()-QSTART[m])/1000);}
+/* 고르는 문제(코드·스케일·음정)에서 평소보다 훨씬 오래 걸린 정답은 '익힘'으로 올리지 않는다 */
+let SLOWNOW=false;
+function isSlow(m){const r=rtNow(m);if(r==null)return false;const rs=(adaptMode(m).rts||[]).slice().sort((a,b)=>a-b);const med=rs.length>=5?rs[rs.length>>1]:6;return r>Math.max(8,med*2.5);}
+/* ---- 날짜별 기록: eartr_hist = { 'YYYY-MM-DD': { [mode]: {c,t,ms} } } ---- */
+let hist=store.get('hist',{});
+function histAdd(m,ok,rt){const d=todayStr();const day=hist[d]=hist[d]||{};const x=day[m]=day[m]||{c:0,t:0,ms:0};x.t++;if(ok)x.c++;if(rt!=null)x.ms+=Math.round(rt*1000);
+  const keys=Object.keys(hist).sort();if(keys.length>120)keys.slice(0,keys.length-120).forEach(k=>delete hist[k]);store.set('hist',hist);}
 function showScore(mode){const s=sess[mode]||{c:0,t:0,streak:0};const el=$('#sc-'+mode);if(el)el.innerHTML=`이번 연습 <b>${s.c}</b> / ${s.t}${s.streak>1?` · 연속 ${s.streak}`:''}`;}
 function weakWeight(mode,item){const it=stats[mode]?.items?.[item];if(!it||it.t<3)return 1.5;return 1+4*(1-it.c/it.t);}
 
@@ -35,11 +49,14 @@ const adaptItem=(m,k)=>{const A=adaptMode(m);return A.items[k]=A.items[k]||{c:0,
 function adaptState(m,k){const it=adaptMode(m).items[k];if(!it||!it.t)return 'new';if(it.streak>=ADAPT_KNOWN)return adaptMode(m).n>=it.due?'review':'known';return 'learn';}
 /* 한 항목의 결과 기록. chosen: 대신 고른(착각한) 항목 key */
 function adaptRecord(m,k,ok,chosen){if(k==null)return;const A=adaptMode(m),it=adaptItem(m,k);it.t++;
-  if(ok){it.c++;it.streak++;if(it.streak>=ADAPT_KNOWN){it.lvl++;it.due=A.n+ADAPT_REVIEW[Math.min(it.lvl-1,ADAPT_REVIEW.length-1)];}}
+  if(typeof courseTouch==='function')courseTouch(m,k);
+  if(ok&&SLOWNOW){it.c++;it.slow=(it.slow||0)+1;it.due=A.n+2;} /* 맞혔지만 오래 걸림: 연속 정답으로 치지 않고 곧 다시 묻는다 */
+  else if(ok){it.c++;it.streak++;if(it.streak>=ADAPT_KNOWN){it.lvl++;it.due=A.n+ADAPT_REVIEW[Math.min(it.lvl-1,ADAPT_REVIEW.length-1)];}}
   else{if(it.streak>=ADAPT_KNOWN)it.lapses++;it.streak=0;it.lvl=0;it.due=A.n+3+rnd(4);if(chosen!=null&&chosen!==k){it.conf[chosen]=(it.conf[chosen]||0)+1;const o=adaptItem(m,chosen);o.conf[k]=(o.conf[k]||0)+1;}}
   store.set('adapt',adapt);}
 /* 문제 하나를 마칠 때마다 호출: 문제 수와 최근 정답 기록 */
-function adaptTick(m,ok){const A=adaptMode(m);A.n++;A.hist.push(ok?1:0);if(A.hist.length>20)A.hist=A.hist.slice(-20);store.set('adapt',adapt);}
+function adaptTick(m,ok,rt){const A=adaptMode(m);A.n++;A.hist.push(ok?1:0);if(A.hist.length>20)A.hist=A.hist.slice(-20);
+  if(rt!=null){A.rts=A.rts||[];A.rts.push(Math.round(rt*10)/10);if(A.rts.length>30)A.rts=A.rts.slice(-30);}store.set('adapt',adapt);}
 function adaptRecentAcc(m){const h=adaptMode(m).hist;return h.length<5?0.65:h.reduce((a,b)=>a+b,0)/h.length;}
 /* 항목 가중치: 처음 1 · 배우는 중 1~4(정답률 낮을수록 큼, 방금 틀린 것은 잠시 0.1) · 익힘 0.15 · 복습 때 1.3 */
 function adaptWeight(m,k){const A=adaptMode(m),it=A.items[k];const acc=adaptRecentAcc(m);const newBoost=acc>0.8?1.6:acc<0.5?0.5:1;
@@ -71,7 +88,7 @@ function renderAdapt(){const ST={new:['처음','var(--line)'],learn:['배우는 
     const keys=Object.keys(A.items).filter(k=>A.items[k].t>0);const groups=groupBy(keys,k=>adaptKind(m,k));
     const cnt={new:0,learn:0,known:0,review:0};keys.forEach(k=>cnt[adaptState(m,k)]++);
     h+=`<details class="cgp" open><summary><b>${MODE_NAMES[m]}</b><span>익힘 ${cnt.known+cnt.review} · 배우는 중 ${cnt.learn} · ${A.n}문제</span></summary>${groups.map(g=>`${g.name?`<div class="mini" style="margin:6px 0 2px">${g.name}</div>`:''}<div class="wmap">${g.items.sort((a,b)=>(A.items[a].c/A.items[a].t)-(A.items[b].c/A.items[b].t)).map(k=>{const it=A.items[k],st=adaptState(m,k),acc=Math.round(it.c/it.t*100);
-      return `<span class="wchip" style="--c:${ST[st][1]}" title="${ST[st][0]} · ${it.c}/${it.t}">${adaptLabel(m,k)}<small>${acc}% · ${ST[st][0]}</small></span>`;}).join('')}</div>`).join('')}</details>`;
+      return `<span class="wchip" style="--c:${ST[st][1]}" title="${ST[st][0]} · ${it.c}/${it.t}">${adaptLabel(m,k)}<small>${acc}% · ${ST[st][0]}${it.slow?` · 느림 ${it.slow}`:''}</small></span>`;}).join('')}</div>`).join('')}</details>`;
     keys.forEach(k=>{for(const o in A.items[k].conf){if(k<o)pairs.push({m,a:k,b:o,n:A.items[k].conf[o]});}});}
   $('#st-adapt').innerHTML=h||'<p class="mini">아직 데이터가 없어요. 문제를 풀면 항목별로 처음 → 배우는 중 → 익힘 상태가 쌓여요.</p>';
   pairs.sort((a,b)=>b.n-a.n);const top=pairs.slice(0,12);

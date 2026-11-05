@@ -7,6 +7,7 @@ function init(){
   $('#g-vol').oninput=e=>{store.set('vol',+e.target.value);if(master)master.gain.value=+e.target.value;if(drumBus)drumBus.gain.value=+e.target.value;};
   $('#g-auto').onchange=e=>store.set('auto',e.target.checked);
   $('#g-inst').value=curInst;$('#g-inst').onchange=e=>{curInst=e.target.value;store.set('inst',curInst);loadInst(curInst);sampleStatus();};
+  $('#g-click').value=store.get('click','beep');$('#g-click').onchange=e=>{store.set('click',e.target.value);stopAll();const t=now();[0,1,2,3].forEach(k=>click(t+k*0.4,k===0,1));};
   $('#g-rev').checked=store.get('rev',true);$('#g-rev').onchange=e=>{store.set('rev',e.target.checked);applyReverb();};
   loadSamples();
   keyOptions($('#mel-key'));keyOptions($('#pg-key'));keyOptions($('#ch-root'));
@@ -29,7 +30,7 @@ function init(){
   $('#mel-check').onclick=melCheck;$('#mel-next').onclick=melNew;
   $('#ch-play').onclick=()=>playToggle('chord');$('#ch-arp').onclick=()=>chPlay(C.q.notes,'arp');$('#ch-next').onclick=chNew;
   $('#pg-play').onclick=()=>playToggle('prog');$('#pg-refbtn').onclick=()=>{stopAll();const q=G.q;chordAt(progVoicings(q.key,[VOCAB[q.mode].find(v=>v.id===(q.mode==='major'?'I':'i'))])[0],now(),1.4);};
-  $('#pg-mine').onclick=pgMine;$('#pg-back').onclick=pgBack;$('#pg-clear').onclick=pgClear;$('#pg-check').onclick=pgCheck;$('#pg-next').onclick=pgNew;
+  $('#pg-bass').onclick=pgBass;$('#pg-mine').onclick=pgMine;$('#pg-back').onclick=pgBack;$('#pg-clear').onclick=pgClear;$('#pg-check').onclick=pgCheck;$('#pg-next').onclick=pgNew;
   $('#rh-play').onclick=()=>playToggle('rhythm');$('#rh-mine').onclick=rhMine;$('#rh-back').onclick=rhBack;$('#rh-clear').onclick=rhClear;
   $('#rh-durpad').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.dt)sAddDirect(+b.dataset.dt,false);else if(b.dataset.dr)sAddDirect(+b.dataset.dr,true);else if(b.dataset.t)sAdd(+b.dataset.t);else if(b.dataset.tup){const n=+b.dataset.tup;R.mod.tup=R.mod.tup===n?0:n;renderDurpad();}else if(b.dataset.a)sAction(b.dataset.a);};
   $('#rh-modetg').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.v===rhInput())return;$('#rh-input').value=b.dataset.v;$('#rh-input').dispatchEvent(new Event('change',{bubbles:true}));};$('#rh-check').onclick=rhCheck;$('#rh-next').onclick=rhNew;
@@ -39,6 +40,7 @@ function init(){
   $('#tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;showTab(b.dataset.tab);};
   // 화면 크기가 휴대폰↔PC로 바뀌면 입력판·건반을 다시 그림
   window.matchMedia('(max-width:640px)').addEventListener('change',()=>{if(M.q){buildPiano($('#mel-piano'),...pianoRange(),melKey);melDurbar();}if(R.q&&R.q.mode==='score')renderDurpad();});
+  initReview();initSync();
   // 첫 화면: 문제만 준비하고 소리는 사용자가 누를 때
   ['melody','chord','prog','rhythm','scale','interval'].forEach(m=>prepare(m));
   const h=location.hash.replace('#','');showTab(['course','melody','chord','prog','rhythm','scale','interval','stats'].includes(h)?h:store.get('tab2','course'),true);
@@ -49,11 +51,15 @@ let curTab='course';
 function showTab(t,initial){curTab=t;stopAll();$$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));$$('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+t));
   {const tb=$('#tabs'),b=tb.querySelector('button.on');if(b){const left=b.offsetLeft-(tb.clientWidth-b.offsetWidth)/2;tb.scrollTo({left:Math.max(0,left),behavior:initial?'auto':'smooth'});}
    if($('#globals').classList.contains('open'))$('#gear').click();}
+  if(NEWQ[t]&&!QSTART[t])QSTART[t]=Date.now(); /* 미리 만들어 둔 문제는 탭을 열 때부터 시간을 잰다 */
+  if(t==='melody'&&naming==='movable'&&M.q&&!initial)refreshCurrent();
   if(t==='stats')renderStats();if(t==='course')renderCourse();renderBanner(t);store.set('tab2',t);if(!initial){try{history.replaceState(null,'','#'+t);}catch(e){}}}
-function refreshCurrent(){if(curTab==='melody'&&M.q){buildPiano($('#mel-piano'),...pianoRange(),melKey);melDurbar();melSlots();}
+function refreshCurrent(){if(curTab==='melody'&&M.q){melMeta();buildPiano($('#mel-piano'),...pianoRange(),melKey);melDurbar();melSlots();}
   else if(NEWQ[curTab])NEWQ[curTab]();}
 window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','');if($('#p-'+h))showTab(h,true);});
 document.addEventListener('keydown',e=>{const tag=(document.activeElement||{}).tagName;if(['INPUT','SELECT','TEXTAREA'].includes(tag))return;if(e.metaKey||e.ctrlKey||e.altKey)return;if(rhKey(e)||melKeyShortcut(e)){e.preventDefault();return;}
   const map={melody:{p:()=>melPlay(false),c:melCheck},chord:{p:()=>chPlay(C.q.notes)},prog:{p:()=>pgPlayList(G.q.voicings,false,true),c:pgCheck},rhythm:{p:()=>rhPlayQ(),c:rhCheck},scale:{p:()=>scPlay(S.q.id,S.q.tonic)},interval:{p:()=>ivPlay(I.q)}}[curTab];if(!map)return;
   if(e.code==='Space'){e.preventDefault();playToggle(curTab);}else if(e.key==='Escape'){e.preventDefault();stopPlay();}else if(e.key==='Enter'&&map.c){e.preventDefault();map.c();}else if((e.key==='s'||e.key==='S'||e.key==='ㄴ')&&SPEED[curTab]){e.preventDefault();playSlow(curTab);}else if(e.key==='n'||e.key==='N'||e.key==='ㅜ'){e.preventDefault();NEWQ[curTab]();}});
 init();
+/* 오프라인 캐시 (PWA): 한 번 받은 화면·소리를 저장해 두고, 인터넷이 없어도 열리게 */
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));

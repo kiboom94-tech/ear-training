@@ -5,7 +5,10 @@ let naming=store.get('naming','letter');
 const LS=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],LF=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 const SS=['도','도♯','레','레♯','미','파','파♯','솔','솔♯','라','라♯','시'],SF=['도','레♭','레','미♭','미','파','솔♭','솔','라♭','라','시♭','시'];
 const FLAT_KEYS=new Set([1,3,5,8,10]);
-function pcName(pc,flat,forceLetter){pc=mod(pc);const L=(forceLetter||naming==='letter');return (L?(flat?LF:LS):(flat?SF:SS))[pc];}
+/* 이동도 (Movable Do): 멜로디 탭에서만 으뜸음을 '도'로 읽는다(마이너도 으뜸음 = 도). 다른 탭은 고정도로 표시 */
+function movTonic(){return (naming==='movable'&&typeof curTab!=='undefined'&&curTab==='melody'&&typeof M!=='undefined'&&M.q)?M.q.tonic:null;}
+function pcName(pc,flat,forceLetter){pc=mod(pc);const L=(forceLetter||naming==='letter');if(L)return (flat?LF:LS)[pc];
+  const T=movTonic();if(T!=null){const r=mod(pc-T);return ([1,3,8,10].includes(r)?SF:SS)[r];}return (flat?SF:SS)[pc];}
 function noteHTML(m,flat){return `${pcName(m,flat)}<small>${Math.floor(m/12)-1}</small>`;}
 function useFlat(tonicPc,iv){const minorish=iv.includes(3)&&!iv.includes(4);return FLAT_KEYS.has(mod(minorish?tonicPc+3:tonicPc));}
 function rootFlat(pc){return [1,3,8,10].includes(mod(pc));}

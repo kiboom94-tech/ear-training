@@ -14,3 +14,14 @@ node tools/flow.mjs shots
 ```
 
 `playwright` 패키지와 Chromium이 설치되어 있어야 합니다 (`npm i -D playwright && npx playwright install chromium`).
+
+## 기능별 테스트
+```bash
+node tools/mock-sync-server.mjs &   # 가짜 구글 시트 서버 (127.0.0.1:8770) — features.mjs의 동기화 시험용
+node tools/features.mjs            # 틀린 문제 복습 · 날짜별 기록 · 느린 정답 · 이동도 · 코스 · 두 기기 동기화
+node tools/offline.mjs             # 한 번 연 뒤 인터넷을 끊어도 열리는지 (서비스 워커)
+node tools/tuplets.mjs             # 3·5·6·7연음 출제·입력·채점, 메트로놈 옵션
+node tools/edit.mjs                # 악보 음표 눌러 바로 고치기
+node tools/adaptive.mjs            # 적응 출제 기록과 출제 빈도
+```
+스크린샷은 `shots/flow/` 폴더가 있어야 저장됩니다 (`mkdir -p shots/flow`).

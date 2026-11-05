@@ -64,7 +64,7 @@ PRESETS.rhythm=lv=>{const P={1:{inp:'pattern',sigs:['4/4'],bars:'1',tempo:70,mix
   3:{inp:'score',sigs:['4/4','3/4','6/8'],bars:'2',tempo:80,mixed:false,vals:['h','q','qd','8','8d','16','rest','tie'],rp:'0.1'},4:{inp:'score',sigs:['4/4','3/4','2/4','5/4','6/8','7/8'],bars:'4',tempo:90,mixed:true,vals:NV_BASIC,rp:'0.2'}}[lv];
   $('#rh-input').value=P.inp;setChecked($('#rh-sigs'),P.sigs);$('#rh-bars').value=P.bars;$('#rh-tempo').value=P.tempo;$('#rh-mixed').checked=P.mixed;setChecked($('#rh-vals'),P.vals);$('#rh-restp').value=P.rp;
   rhPatPreset(lv);$('#rh-metromode').value='off';$('#rh-metrovol').value=1;$('#rh-count').checked=true;rhInputToggle();};
-function rhNew(){stopAll();const mode=rhInput();const sigs=rhSelSigs();const nb=+$('#rh-bars').value||1;const mixed=$('#rh-mixed').checked;const pickSig=()=>adaptPick('rhythm','rh',sigs,x=>'s:'+x);const fixed=pickSig();
+function rhNew(){stopAll();const rq=takeReplay('rhythm');if(rq&&rq.mode!==rhInput()){$('#rh-input').value=rq.mode;rhInputToggle();}const mode=rhInput();const sigs=rhSelSigs();const nb=+$('#rh-bars').value||1;const mixed=$('#rh-mixed').checked;const pickSig=()=>adaptPick('rhythm','rh',sigs,x=>'s:'+x);const fixed=pickSig();
   const bars=[];for(let b=0;b<nb;b++){const sig=mixed?pickSig():fixed;
     if(mode==='score')bars.push({sig,ev:genScoreBar(sig,rhAllow(),+$('#rh-restp').value)});
     else{const fam=famOf(sig);const list=fam==='compound'?COMPOUND_PATS:SIMPLE_PATS;let ids=checked($('#rh-pats')).filter(id=>list.some(p=>p.id===id));if(!ids.length)ids=list.filter(p=>p.lv===1).map(p=>p.id);
@@ -72,8 +72,9 @@ function rhNew(){stopAll();const mode=rhInput();const sigs=rhSelSigs();const nb=
       if(b===0&&PAT[beats[0]].g[0]===0&&ids.some(id=>PAT[id].g[0]===1)&&Math.random()<0.7)beats[0]=pick(ids.filter(id=>PAT[id].g[0]===1));
       bars.push({sig,beats,ev:beats.flatMap(patEvents)});}}
   const meta=[];bars.forEach((b,bi)=>{if(b.beats)b.beats.forEach((id,k)=>meta.push({bar:bi,k,fam:famOf(b.sig)}));});
-  R.q={mode,bars,meta};R.ans=meta.map(()=>null);R.cur=0;R.checked=false;R.sbars=bars.map(b=>({sig:b.sig,ev:[]}));R.sbar=0;R.sel=null;R.mod={dot:false,rest:false,tup:0};
-  const sl=[...new Set(bars.map(b=>b.sig))];$('#rh-meta').innerHTML=`박자 <b>${sl.join(' · ')}</b>${sl.length>1?' (박자 변화 · Mixed Meter)':''} · ${nb}마디 · 템포는 4분음표 기준`;
+  R.q={mode,bars,meta};if(rq)R.q=rq;R.ans=R.q.meta.map(()=>null);R.cur=0;R.checked=false;R.sbars=R.q.bars.map(b=>({sig:b.sig,ev:[]}));R.sbar=0;R.sel=null;R.mod={dot:false,rest:false,tup:0};
+  const sl=[...new Set(R.q.bars.map(b=>b.sig))];const dropped=mode==='pattern'?checked($('#rh-sigs')).filter(x=>!PATTERN_SIGS.includes(x)):[];
+  $('#rh-meta').innerHTML=`박자 <b>${sl.join(' · ')}</b>${sl.length>1?' (박자 변화 · Mixed Meter)':''} · ${R.q.bars.length}마디 · 템포는 4분음표 기준${dropped.length?`<br><span class="warn">빠른 입력에서는 ${dropped.join('·')} 박자를 쓸 수 없어서 빠졌어요. 악보 입력으로 바꾸면 나와요.</span>`:''}`;
   $('#rh-fb').innerHTML='';$('#rh-fb').className='feedback';$('#rh-cmp').innerHTML='';clearStaff($('#rh-answer'));$('#rh-swarn').textContent='';
   if(mode==='score'){renderDurpad();sRender();}else rhView();
   at(0.15,()=>rhPlayQ());}

@@ -18,13 +18,13 @@ function chPlay(notes,mode){stopAll();let t=now();mode=mode||$('#ch-mode').value
 function chNew(){stopAll();let types=checked($('#ch-types'));if(types.length<2){types=['maj','m'];}
   const id=adaptPick('chord','ch',types,x=>x);
   const rv=$('#ch-root').value,rpc=rv==='r'?rnd(12):+rv;const root=48+rpc+(rpc<4?12:0);const vm=$('#ch-voice').value;
-  C.q={id,root,vm,notes:voice(root,CH[id].iv,vm),types};C.done=false;
-  renderChoices($('#ch-choices'),types.map(t=>({id:t,label:CH[t].disp,sub:CH[t].kr})),chAnswer,it=>CH[it.id].g);
+  C.q={id,root,vm,notes:voice(root,CH[id].iv,vm),types};{const r=takeReplay('chord');if(r)C.q=r;}C.done=false;
+  renderChoices($('#ch-choices'),C.q.types.map(t=>({id:t,label:CH[t].disp,sub:CH[t].kr})),chAnswer,it=>CH[it.id].g);
   $('#ch-fb').innerHTML='';$('#ch-cmp').innerHTML='';clearStaff($('#ch-staff'));needRange(Math.min(...C.q.notes),Math.max(...C.q.notes));autoPlay(()=>chPlay(C.q.notes));}
 function chAnswer(it,btn){if(C.done)return;C.done=true;const q=C.q,ok=it.id===q.id;btn.classList.add(ok?'right':'wrong');
   if(!ok){const rb=revealChoice($('#ch-choices'),q.id);if(rb)rb.classList.add('right');}
   const nm=pcName(mod(q.root),rootFlat(q.root),true)+CH[q.id].sym;
-  record('chord',CH[q.id].disp,ok);adaptRecord('chord',q.id,ok,it.id);sessAdd('chord',ok);
+  record('chord',CH[q.id].disp,ok);SLOWNOW=ok&&isSlow('chord');adaptRecord('chord',q.id,ok,it.id);sessAdd('chord',ok);
   feedback($('#ch-fb'),ok,ok?`정답! ${nm} · ${CH[q.id].kr}`:`정답은 ${CH[q.id].disp} · ${CH[q.id].kr}였어요.`,`이번 코드: ${nm} · 구성음 (Chord Tones) ${q.notes.map(m=>pcName(m,rootFlat(q.root))).join(' ')}`);
   cmpButtons($('#ch-cmp'),()=>chPlay(q.notes),ok?null:()=>chPlay(voice(q.root,CH[it.id].iv,q.vm==='inv'?'close':q.vm)),`내 답 듣기 · ${CH[it.id].disp}`);
   {const mine=voice(q.root,CH[it.id].iv,q.vm==='inv'?'close':q.vm);const ch=[{midis:q.notes,spell:chordSpeller(mod(q.root),q.id,rootFlat(q.root)),top:nm,bottom:'정답',color:ok?null:GOODC}];

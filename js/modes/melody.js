@@ -65,15 +65,18 @@ function melPlay(withRef,mine){stopAll();let t=now();if(withRef)t=melRef(t);cons
   const seq=mine?M.ans.map((a,i)=>({m:a==='R'?null:a,d:melRhy()?(M.dur[i]||1):(M.q.ev[i]?M.q.ev[i].d:1)})):M.q.ev;
   seq.forEach(e=>{if(e.m!=null)piano(e.m,t,e.d*spb*0.95);t+=e.d*spb;});}
 function melNew(){
-  stopAll();M.q=genMelody();M.ans=[];M.dur=[];M.sel=null;M.curDur=1;M.checked=false;
+  stopAll();M.q=takeReplay('melody')||genMelody();M.ans=[];M.dur=[];M.sel=null;M.curDur=1;M.checked=false;
   if($('#mel-give').checked){M.ans=[M.q.ev[0].m];M.dur=[M.q.ev[0].d];}
-  const kname=pcName(M.q.tonic,M.q.flat);const nr=M.q.ev.filter(e=>e.m==null).length;
-  const cnt=melShowCount()?` · ${M.q.notes.length}음${nr?` + 쉼표 ${nr}개 (칸 ${M.q.ev.length}개)`:''}`:(melRhy()?' · 칸 수 숨김':` · ${M.q.notes.length}음`);
-  $('#mel-meta').innerHTML=`스케일 <b>${kname} ${M.q.sc.n}</b>${cnt}${$('#mel-give').checked?` · 첫 음 ${noteHTML(M.q.notes[0],M.q.flat).replace(/<small>/,'').replace('</small>','')}`:''}`;
+  melMeta();
   buildPiano($('#mel-piano'),...pianoRange(),melKey);
   melDurbar();melSlots();$('#mel-fb').innerHTML='';$('#mel-fb').className='feedback';$('#mel-cmp').innerHTML='';clearStaff($('#mel-staff-ans'));
   needRange(Math.min(M.q.low,M.q.tonic-12),M.q.high);autoPlay(()=>melPlay($('#mel-ref').checked));
 }
+/* 문제 설명 줄 (스케일·칸 수·첫 음) */
+function melMeta(){
+  const kname=naming==='movable'?pcName(M.q.tonic,M.q.flat,true)+' (도 = '+pcName(M.q.tonic,M.q.flat,true)+')':pcName(M.q.tonic,M.q.flat);const nr=M.q.ev.filter(e=>e.m==null).length;
+  const cnt=melShowCount()?` · ${M.q.notes.length}음${nr?` + 쉼표 ${nr}개 (칸 ${M.q.ev.length}개)`:''}`:(melRhy()?' · 칸 수 숨김':` · ${M.q.notes.length}음`);
+  $('#mel-meta').innerHTML=`스케일 <b>${kname} ${M.q.sc.n}</b>${cnt}${$('#mel-give').checked?` · 첫 음 ${noteHTML(M.q.notes[0],M.q.flat).replace(/<small>/,'').replace('</small>','')}`:''}`;}
 function melItems(seq,clef,sp,colFn){const rk=clef==='bass'?'d/3':'b/4',rw=clef==='bass'?'f/3':'d/5';return seq.map((e,i)=>({keys:[e.m==null?(e.d===4?rw:rk):sp.spell(e.m)],dur:(MDUR[e.d]||'q')+(e.m==null?'r':''),color:e.ghost?GREYC:(colFn?colFn(i):null),tie:!!e.tie,i:e.ghost?null:(e.i!=null?e.i:i)}));}
 /* 박 단위 길이를 표기 가능한 음표 길이로 쪼갬 (예: 2.5박 → 2 + 0.5, 붙임줄) */
 function splitDur(d){const out=[];let r=d;[4,3,2,1.5,1,0.75,0.5,0.25].forEach(u=>{while(r>=u-1e-6){out.push(u);r-=u;}});if(!out.length)out.push(0.25);return out;}

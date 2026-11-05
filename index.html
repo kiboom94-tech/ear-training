@@ -8,6 +8,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2350a8">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="청음 트레이너">
 </head>
 <body>
 <header class="top">
@@ -17,10 +22,11 @@
     <button class="gear" id="gear" aria-label="설정 메뉴 열기" aria-expanded="false">⚙</button>
     <div class="globals" id="globals">
       <label for="g-naming">음이름
-        <select id="g-naming" style="width:auto"><option value="letter">C D E</option><option value="solfege">도 레 미</option></select>
+        <select id="g-naming" style="width:auto"><option value="letter">C D E</option><option value="solfege">도 레 미 · 고정도 (Fixed Do)</option><option value="movable">도 레 미 · 이동도 (Movable Do, 멜로디)</option></select>
       </label>
       <label for="g-inst">소리 <select id="g-inst" style="width:auto"><option value="piano">피아노 (Piano)</option><option value="harp">하프 (Harp)</option><option value="guitar">기타 (Guitar)</option></select></label>
       <label for="g-vol">볼륨 <input id="g-vol" type="range" min="0" max="1" step="0.05" value="0.7" style="width:80px"></label>
+      <label for="g-click">메트로놈 <select id="g-click" style="width:auto"><option value="beep">삑 (Beep)</option><option value="wood">우드블록 (Wood)</option><option value="hihat">하이햇 (Hi-hat)</option><option value="stick">스틱 (Stick)</option></select></label>
       <label class="chk" for="g-rev" style="padding:0"><input id="g-rev" type="checkbox" checked>울림 (Reverb)</label>
       <label class="chk" for="g-auto" style="padding:0"><input id="g-auto" type="checkbox">자동 다음 (Auto Next)</label>
       <span id="snd-status" class="mini" style="font-family:var(--mono);white-space:nowrap">소리 준비 중</span>
@@ -199,6 +205,7 @@
     </div>
     <div class="controls sub">
       <button class="btn" id="pg-refbtn">으뜸화음 듣기 <span class="en">(Tonic)</span></button>
+      <button class="btn" id="pg-bass">베이스만 듣기 <span class="en">(Bass)</span></button>
       <button class="btn" id="pg-mine">내 답 듣기 <span class="en">(My Answer)</span></button>
       <button class="btn" id="pg-back">← 하나 지우기</button>
       <button class="btn" id="pg-clear">모두 지우기</button>
@@ -340,6 +347,7 @@
       <button class="btn" id="iv-stop" disabled>■ 정지 <span class="en">(Stop)</span><kbd>Esc</kbd></button>
       <button class="btn ghost" id="iv-next">다음 문제<kbd>N</kbd></button>
     </div>
+    <div class="controls sub"></div>
     <div id="iv-choices"></div>
     <div class="feedback" id="iv-fb"></div>
     <div class="compare" id="iv-cmp"></div>
@@ -353,13 +361,23 @@
   <div class="stats-wrap">
     <div class="card"><h2 style="font-size:16px;margin:0 0 10px">영역별 정답률</h2><div id="st-modes"></div></div>
     <div class="card"><h2 style="font-size:16px;margin:0 0 10px">자주 틀리는 항목</h2><div id="st-weak"></div></div>
+    <div class="card" style="grid-column:1/-1"><h2 style="font-size:16px;margin:0 0 4px">날짜별 연습 (Daily History) · 최근 14일</h2><div id="st-hist"></div></div>
     <div class="card" style="grid-column:1/-1"><h2 style="font-size:16px;margin:0 0 4px">약점 지도 (Weak Spot Map) · 적응 출제 기록</h2>
       <div class="mini" style="margin-bottom:10px">항목마다 <b>처음 → 배우는 중 → 익힘</b>으로 올라가요. 연속 3번 맞히면 익힘이 되고, 그 뒤 5·15·40문제 간격으로 다시 나와요. 틀리면 다시 배우는 중으로 내려와요.</div>
       <div id="st-adapt"></div></div>
     <div class="card" style="grid-column:1/-1"><h2 style="font-size:16px;margin:0 0 10px">자주 헷갈리는 쌍 (Confusion Pairs)</h2><div id="st-conf"></div></div>
+    <div class="card" style="grid-column:1/-1"><h2 style="font-size:16px;margin:0 0 4px">기기 연결 · 선생님 시트 (Sync)</h2>
+      <div class="mini" style="margin-bottom:10px">같은 <b>학생 코드</b>를 넣은 휴대폰·PC는 기록과 코스 진도가 합쳐지고, 선생님 구글 시트에 요약이 올라가요. 선생님이 보낸 링크로 들어오면 주소가 자동으로 채워져요.</div>
+      <div class="syncbox">
+        <div class="row2"><label class="fld"><span>학생 코드 (Student Code)</span><input type="text" id="sync-code" placeholder="예: YCD-01" autocomplete="off" autocapitalize="characters"></label>
+          <label class="fld"><span>이름 (Name) · 시트에 표시</span><input type="text" id="sync-name" placeholder="예: 김유캔" autocomplete="off"></label></div>
+        <label class="fld"><span>동기화 주소 (Sync URL) · 선생님이 알려준 주소</span><input type="url" id="sync-url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></label>
+        <div class="controls" style="margin:0"><button class="btn primary" id="sync-save">저장하고 동기화</button><button class="btn" id="sync-now">지금 동기화 (Sync Now)</button><button class="btn ghost" id="sync-off">동기화 끄기</button></div>
+        <div class="mini" id="sync-status" aria-live="polite"></div>
+      </div></div>
     <div class="card" style="grid-column:1/-1">
       <div class="mini">소리: Salamander Grand Piano (Alexander Holm, CC BY 3.0) · 하프·클래식 기타 tonejs-instruments (퍼블릭 도메인 샘플) · 드럼 Tone.js 샘플.</div>
-      <div class="mini">기록은 이 브라우저에만 저장돼요. 다른 기기나 브라우저에서는 따로 쌓여요.</div>
+      <div class="mini">기록은 이 브라우저에 저장돼요. 위 '기기 연결'을 켜면 다른 기기와 합쳐져요.</div>
       <div class="controls" style="margin:10px 0 0"><button class="btn" id="st-reset">기록 모두 지우기</button><span class="mini" id="st-confirm" style="align-self:center"></span></div>
     </div>
   </div>
@@ -378,8 +396,10 @@
 <script src="js/modes/rhythm.js"></script>
 <script src="js/modes/scale.js"></script>
 <script src="js/modes/interval.js"></script>
+<script src="js/review.js"></script>
 <script src="js/course.js"></script>
 <script src="js/stats.js"></script>
+<script src="js/sync.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

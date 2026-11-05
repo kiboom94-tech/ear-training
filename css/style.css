@@ -316,3 +316,19 @@ details.track[open]>summary .track-h::after{transform:rotate(90deg)}
   .tracks{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+/* 틀린 문제 복습 */
+.rvtag{display:inline-block;margin-left:8px;font-size:12px;font-weight:700;color:var(--accent-ink);background:var(--accent);border-radius:999px;padding:2px 9px;vertical-align:middle}
+.rvn{font-family:var(--mono);font-size:12px;margin-left:2px}
+/* 날짜별 기록 */
+.hchart{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;align-items:end;height:150px;margin:8px 0 4px}
+.hbar{display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative}
+.hbar i{display:block;border-radius:4px 4px 0 0;background:var(--accent);min-height:2px}
+.hbar i.ok{background:var(--good)}
+.hbar span{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:10.5px;font-family:var(--mono);color:var(--muted)}
+.hdays{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;font-size:10px;font-family:var(--mono);color:var(--muted);text-align:center}
+.hdays .today{color:var(--ink);font-weight:700}
+.up{color:var(--good)}.down{color:var(--bad)}
+/* 동기화 */
+.syncbox{display:grid;gap:8px;max-width:640px}
+.syncbox input[type=text],.syncbox input[type=url]{font:inherit;font-size:14px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:100%}
+@media (max-width:640px){.hdays span:nth-child(odd):not(.today){visibility:hidden}.hdays{font-size:9.5px}.hbar span{font-size:9.5px}}
