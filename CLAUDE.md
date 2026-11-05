@@ -6,6 +6,8 @@
 - 소리: `samples/`(피아노), `samples/harp`, `samples/guitar`, `samples/drums` 의 mp3 샘플을 Web Audio API로 재생
 - 악보 표시: `vendor/vexflow.js` (VexFlow 4, 전역 `Vex.Flow`)
 - 기록 저장: localStorage (`eartr_` 접두어). 적응 출제 기록은 `eartr_adapt` (모드별 항목 상태·착각 쌍), 누적 정답률은 `eartr_stats`.
+- 리듬 연음: 4분음표 = 48틱 기준에 3연음(16틱)·5연음(9.6)·6연음(8)·7연음(48/7)을 소수 틱으로 넣는다. 합계는 `r6()`로 반올림해 비교. 이벤트의 `tn`이 연음 수, `tg`가 묶음 id.
+- 악보 편집: 멜로디·리듬 '내가 적은' 악보의 음표를 누르면 선택(`M.sel`, `R.sel`)되고 다음 입력으로 바로 교체된다.
 - 적응 출제 (Adaptive): 모든 모드 공통 엔진(`adaptRecord`/`adaptWeight`/`adaptPick`). 항목 key는 멜로디 `d:도수(반음)`·`l:도약(스케일 단계)`·`rest`·`oct`·`v:길이`, 코드 진행 `c:코드`·`p:앞>뒤`·`g:진행`, 리듬 `p:패턴`·`b:박자|박`·`s:박자`·`o:홑/겹|박안위치틱`·`e:tie/rest/sync`, 코드·스케일은 id, 음정은 `id:방향`.
 - 빌드 도구 없음. 정적 파일만으로 GitHub Pages에서 동작해야 한다.
 - 화면 자동 확인: `tools/shot.mjs`(캡처), `tools/flow.mjs`(모든 탭×난이도×PC·휴대폰 실행 테스트). 사용법은 `tools/README.md`.
