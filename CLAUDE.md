@@ -5,7 +5,8 @@
 - 모드: 코스(Course) / 멜로디 받아쓰기 / 코드 종류 / 코드 진행(도수) / 리듬 받아쓰기 / 스케일 / 음정 / 기록(Stats)
 - 소리: `samples/`(피아노), `samples/harp`, `samples/guitar`, `samples/drums` 의 mp3 샘플을 Web Audio API로 재생
 - 악보 표시: `vendor/vexflow.js` (VexFlow 4, 전역 `Vex.Flow`)
-- 기록 저장: localStorage (`eartr_` 접두어)
+- 기록 저장: localStorage (`eartr_` 접두어). 적응 출제 기록은 `eartr_adapt` (모드별 항목 상태·착각 쌍), 누적 정답률은 `eartr_stats`.
+- 적응 출제 (Adaptive): 모든 모드 공통 엔진(`adaptRecord`/`adaptWeight`/`adaptPick`). 항목 key는 멜로디 `d:도수(반음)`·`l:도약(스케일 단계)`·`rest`·`oct`·`v:길이`, 코드 진행 `c:코드`·`p:앞>뒤`·`g:진행`, 리듬 `p:패턴`·`b:박자|박`·`s:박자`·`o:홑/겹|박안위치틱`·`e:tie/rest/sync`, 코드·스케일은 id, 음정은 `id:방향`.
 - 빌드 도구 없음. 정적 파일만으로 GitHub Pages에서 동작해야 한다.
 - 화면 자동 확인: `tools/shot.mjs`(캡처), `tools/flow.mjs`(모든 탭×난이도×PC·휴대폰 실행 테스트). 사용법은 `tools/README.md`.
 - 기록을 기기 간에 공유하는 방안은 `docs/기록-동기화-방안.md`에 정리되어 있다(아직 구현 안 함).

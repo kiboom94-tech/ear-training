@@ -162,6 +162,9 @@ table.st th.n{text-align:right}
 .meter{height:6px;border-radius:3px;background:var(--line);overflow:hidden;min-width:60px}
 .meter>i{display:block;height:100%;background:var(--accent)}
 .stats-wrap{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.wmap{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.wchip{border:1px solid var(--line);border-left:5px solid var(--c);border-radius:8px;padding:4px 9px;font-size:13px;background:var(--surface)}
+.wchip small{display:block;font-size:11px;color:var(--muted)}
 @media (max-width:860px){.stats-wrap{grid-template-columns:1fr}}
 .tip{font-size:12.5px;color:var(--muted);margin-top:14px;border-top:1px dashed var(--line);padding-top:10px}
 .warn{color:var(--bad);font-size:13px}
@@ -392,6 +395,7 @@ details.track[open]>summary .track-h::after{transform:rotate(90deg)}
         <label class="chk"><input type="checkbox" id="mel-oct">옥타브 (Octave)는 틀려도 정답 처리</label>
         <label class="chk"><input type="checkbox" id="mel-ref">문제 전에 기준 화음 (Reference Chord) 들려주기</label>
         <label class="chk"><input type="checkbox" id="mel-labels">건반에 음이름 (Note Name) 모두 표시</label>
+        <label class="chk"><input type="checkbox" id="mel-adapt" checked><span>적응 출제 (Adaptive)<small>틀린 것·헷갈린 것은 더 자주, 익힌 것은 가끔만 나와요. 기록 탭의 약점 지도에서 볼 수 있어요.</small></span></label>
       </div>
       <div class="section-label">리듬 받아쓰기에 쓸 음 길이 (Note Values)</div>
       <div id="mel-vals"></div>
@@ -449,7 +453,7 @@ details.track[open]>summary .track-h::after{transform:rotate(90deg)}
       <label class="fld"><span>근음 (Root)</span>
         <select id="ch-root"><option value="r">랜덤</option></select></label>
       <div class="opts">
-        <label class="chk"><input type="checkbox" id="ch-weak">약점 집중 (Weak Spot Focus) <small>자주 틀린 코드를 더 많이 출제해요</small></label>
+        <label class="chk"><input type="checkbox" id="ch-weak" checked><span>적응 출제 (Adaptive)<small>틀린 것·헷갈린 것은 더 자주, 익힌 것은 가끔만 나와요. 기록 탭의 약점 지도에서 볼 수 있어요.</small></span></label>
       </div>
       <div class="section-label">출제할 코드 종류 (Chord Quality)</div>
       <div id="ch-types"></div>
@@ -494,6 +498,7 @@ details.track[open]>summary .track-h::after{transform:rotate(90deg)}
         <label class="chk"><input type="checkbox" id="pg-start">첫 코드 알려주기 (무작위 모드에서는 으뜸화음으로 시작)</label>
         <label class="chk"><input type="checkbox" id="pg-resolve">세컨더리 도미넌트 (Secondary Dominant)는 목표 코드로 해결 (Resolution)</label>
         <label class="chk"><input type="checkbox" id="pg-ref">문제 전에 으뜸화음 (Tonic Chord) 들려주기</label>
+        <label class="chk"><input type="checkbox" id="pg-adapt" checked><span>적응 출제 (Adaptive)<small>틀린 것·헷갈린 것은 더 자주, 익힌 것은 가끔만 나와요. 기록 탭의 약점 지도에서 볼 수 있어요.</small></span></label>
       </div>
       <div class="section-label" id="pg-progs-label">출제할 진행 (Progression) · 장르별 전체 선택 가능</div>
       <div id="pg-progs"></div>
@@ -546,6 +551,7 @@ details.track[open]>summary .track-h::after{transform:rotate(90deg)}
         <label class="fld"><span>리듬 소리 (Sound) · 메트로놈은 기본 '삑' 소리예요</span><select id="rh-sound"><option value="mallet">부드러운 나무 소리 (Soft Mallet)</option><option value="low">낮은 나무 소리 (Low Mallet)</option><option value="tom1">탐 (Tom)</option><option value="snare">스네어 (Snare)</option></select></label>
         <label class="chk"><input type="checkbox" id="rh-metro"><span>메트로놈 (Metronome) 같이 듣기<small>예비박 뒤로 점점 작아져요</small></span></label>
         <label class="chk"><input type="checkbox" id="rh-count">한 마디 카운트인 (Count-in)</label>
+        <label class="chk"><input type="checkbox" id="rh-adapt" checked><span>적응 출제 (Adaptive)<small>틀린 것·헷갈린 것은 더 자주, 익힌 것은 가끔만 나와요. 기록 탭의 약점 지도에서 볼 수 있어요.</small></span></label>
       </div>
       <div id="rh-pat-box"><div class="section-label">출제할 박 패턴 (Beat Pattern) · 한 박 단위</div><div id="rh-pats"></div></div>
       <div id="rh-val-box"><div class="section-label">출제할 음표와 리듬 요소 (Note Values)</div><div id="rh-vals"></div>
@@ -600,7 +606,7 @@ details.track[open]>summary .track-h::after{transform:rotate(90deg)}
       </div>
       <div class="opts">
         <label class="chk"><input type="checkbox" id="sc-chord">스케일 전에 으뜸화음 (Tonic Chord) 들려주기</label>
-        <label class="chk"><input type="checkbox" id="sc-weak">약점 집중 (Weak Spot Focus)</label>
+        <label class="chk"><input type="checkbox" id="sc-weak" checked><span>적응 출제 (Adaptive)<small>틀린 것·헷갈린 것은 더 자주, 익힌 것은 가끔만 나와요. 기록 탭의 약점 지도에서 볼 수 있어요.</small></span></label>
       </div>
       <div class="section-label">출제할 스케일 (Scale)</div>
       <div id="sc-scales"></div>
@@ -636,7 +642,7 @@ details.track[open]>summary .track-h::after{transform:rotate(90deg)}
         <label class="chk"><input type="checkbox" id="iv-up">상행 (Ascending) · 낮은 음 → 높은 음</label>
         <label class="chk"><input type="checkbox" id="iv-down">하행 (Descending) · 높은 음 → 낮은 음</label>
         <label class="chk"><input type="checkbox" id="iv-harm">화성 음정 (Harmonic Interval) · 동시에</label>
-        <label class="chk"><input type="checkbox" id="iv-weak">약점 집중 (Weak Spot Focus)</label>
+        <label class="chk"><input type="checkbox" id="iv-weak" checked><span>적응 출제 (Adaptive)<small>틀린 것·헷갈린 것은 더 자주, 익힌 것은 가끔만 나와요. 기록 탭의 약점 지도에서 볼 수 있어요.</small></span></label>
       </div>
       <label class="fld"><span>재생 속도 (Playback Speed, %)</span><input id="iv-speed" type="number" min="40" max="200" value="100"></label>
       <div class="section-label">출제할 음정 (Interval)</div>
@@ -665,6 +671,10 @@ details.track[open]>summary .track-h::after{transform:rotate(90deg)}
   <div class="stats-wrap">
     <div class="card"><h2 style="font-size:16px;margin:0 0 10px">영역별 정답률</h2><div id="st-modes"></div></div>
     <div class="card"><h2 style="font-size:16px;margin:0 0 10px">자주 틀리는 항목</h2><div id="st-weak"></div></div>
+    <div class="card" style="grid-column:1/-1"><h2 style="font-size:16px;margin:0 0 4px">약점 지도 (Weak Spot Map) · 적응 출제 기록</h2>
+      <div class="mini" style="margin-bottom:10px">항목마다 <b>처음 → 배우는 중 → 익힘</b>으로 올라가요. 연속 3번 맞히면 익힘이 되고, 그 뒤 5·15·40문제 간격으로 다시 나와요. 틀리면 다시 배우는 중으로 내려와요.</div>
+      <div id="st-adapt"></div></div>
+    <div class="card" style="grid-column:1/-1"><h2 style="font-size:16px;margin:0 0 10px">자주 헷갈리는 쌍 (Confusion Pairs)</h2><div id="st-conf"></div></div>
     <div class="card" style="grid-column:1/-1">
       <div class="mini">소리: Salamander Grand Piano (Alexander Holm, CC BY 3.0) · 하프·클래식 기타 tonejs-instruments (퍼블릭 도메인 샘플) · 드럼 Tone.js 샘플.</div>
       <div class="mini">기록은 이 브라우저에만 저장돼요. 다른 기기나 브라우저에서는 따로 쌓여요.</div>
@@ -974,9 +984,62 @@ function record(mode,item,ok){
   if(item!=null){s.t++;if(ok)s.c++;const it=s.items[item]=s.items[item]||{c:0,t:0};it.t++;if(ok)it.c++;}
   store.set('stats',stats);
 }
-function sessAdd(mode,ok,score){const s=sess[mode]=sess[mode]||{c:0,t:0,streak:0};s.t++;if(ok){s.c++;s.streak++;}else s.streak=0;showScore(mode);bumpDaily();courseRecord(mode,score==null?(ok?1:0):score);}
+function sessAdd(mode,ok,score){adaptTick(mode,ok);const s=sess[mode]=sess[mode]||{c:0,t:0,streak:0};s.t++;if(ok){s.c++;s.streak++;}else s.streak=0;showScore(mode);bumpDaily();courseRecord(mode,score==null?(ok?1:0):score);}
 function showScore(mode){const s=sess[mode]||{c:0,t:0,streak:0};const el=$('#sc-'+mode);if(el)el.innerHTML=`이번 연습 <b>${s.c}</b> / ${s.t}${s.streak>1?` · 연속 ${s.streak}`:''}`;}
 function weakWeight(mode,item){const it=stats[mode]?.items?.[item];if(!it||it.t<3)return 1.5;return 1+4*(1-it.c/it.t);}
+
+/* ================= 적응 출제 (Adaptive) =================
+   항목(key)마다 '처음 → 배우는 중 → 익힘 → 복습' 상태를 두고, 정답률과 착각 쌍에 따라 다음 문제의 빈도를 바꾼다.
+   저장: eartr_adapt = { [mode]: { n: 푼 문제 수, items: { key: {c,t,streak,lvl,due,lapses,conf:{다른key:횟수}} }, hist:[최근 정답 0/1] } } */
+let adapt=store.get('adapt',{});
+const ADAPT_REVIEW=[5,15,40];           /* 익힌 항목을 다시 묻는 간격(문제 수) */
+const ADAPT_KNOWN=3;                    /* 연속 정답 몇 번이면 '익힘' */
+const adaptMode=m=>adapt[m]=adapt[m]||{n:0,items:{},hist:[]};
+const adaptItem=(m,k)=>{const A=adaptMode(m);return A.items[k]=A.items[k]||{c:0,t:0,streak:0,lvl:0,due:0,lapses:0,conf:{}};};
+function adaptState(m,k){const it=adaptMode(m).items[k];if(!it||!it.t)return 'new';if(it.streak>=ADAPT_KNOWN)return adaptMode(m).n>=it.due?'review':'known';return 'learn';}
+/* 한 항목의 결과 기록. chosen: 대신 고른(착각한) 항목 key */
+function adaptRecord(m,k,ok,chosen){if(k==null)return;const A=adaptMode(m),it=adaptItem(m,k);it.t++;
+  if(ok){it.c++;it.streak++;if(it.streak>=ADAPT_KNOWN){it.lvl++;it.due=A.n+ADAPT_REVIEW[Math.min(it.lvl-1,ADAPT_REVIEW.length-1)];}}
+  else{if(it.streak>=ADAPT_KNOWN)it.lapses++;it.streak=0;it.lvl=0;it.due=A.n+3+rnd(4);if(chosen!=null&&chosen!==k){it.conf[chosen]=(it.conf[chosen]||0)+1;const o=adaptItem(m,chosen);o.conf[k]=(o.conf[k]||0)+1;}}
+  store.set('adapt',adapt);}
+/* 문제 하나를 마칠 때마다 호출: 문제 수와 최근 정답 기록 */
+function adaptTick(m,ok){const A=adaptMode(m);A.n++;A.hist.push(ok?1:0);if(A.hist.length>20)A.hist=A.hist.slice(-20);store.set('adapt',adapt);}
+function adaptRecentAcc(m){const h=adaptMode(m).hist;return h.length<5?0.65:h.reduce((a,b)=>a+b,0)/h.length;}
+/* 항목 가중치: 처음 1 · 배우는 중 1~4(정답률 낮을수록 큼, 방금 틀린 것은 잠시 0.1) · 익힘 0.15 · 복습 때 1.3 */
+function adaptWeight(m,k){const A=adaptMode(m),it=A.items[k];const acc=adaptRecentAcc(m);const newBoost=acc>0.8?1.6:acc<0.5?0.5:1;
+  if(!it||!it.t)return 1*newBoost;const st=adaptState(m,k);
+  if(st==='known')return 0.15;if(st==='review')return 1.3;
+  if(A.n<it.due)return 0.1;return (1+3*(1-it.c/it.t))*(2-newBoost);}
+const adaptOn=pre=>{const el=document.getElementById(pre+'-adapt')||document.getElementById(pre+'-weak');return !el||el.checked;};
+const clampW=(w,lo,hi)=>Math.min(hi,Math.max(lo,w));
+/* 후보 중 하나를 가중치로 고름. keyFn: 후보 → key */
+function adaptPick(m,pre,cands,keyFn){if(!adaptOn(pre)||cands.length<2)return pick(cands);return wpick(cands,c=>adaptWeight(m,keyFn(c)));}
+function adaptW(m,pre,k){return adaptOn(pre)?adaptWeight(m,k):1;}
+/* 기록 화면용 라벨 */
+const DEG_NAME={0:'1도 (Tonic)',1:'♭2도',2:'2도',3:'♭3도',4:'3도',5:'4도',6:'♯4·♭5도',7:'5도',8:'♭6도',9:'6도',10:'♭7도',11:'7도'};
+function adaptLabel(m,k){const [kind,...r]=k.split(':');const v=r.join(':');
+  if(m==='chord')return CH[k]?CH[k].disp+' · '+CH[k].kr:k;
+  if(m==='scale')return SCALES[k]?SCALES[k].n:k;
+  if(m==='interval'){const iv=INTERVALS.find(i=>i.id===kind);return (iv?iv.n:kind)+' · '+({up:'상행',down:'하행',harm:'화성'}[v]||v);}
+  if(m==='melody'){if(kind==='d')return '도수 '+(DEG_NAME[v]||v);if(kind==='l'){const n=+v;return n===0?'같은 음 반복':`${Math.abs(n)+1}도 ${n>0?'상행':'하행'}`;}if(kind==='rest')return '쉼표 듣기';if(kind==='oct')return '옥타브 구별';if(kind==='v')return (MNAME[v]||v)+' 길이';}
+  if(m==='prog'){const lb=id=>{const x=VOCAB.major.find(y=>y.id===id)||VOCAB.minor.find(y=>y.id===id);return x?x.lb:id;};if(kind==='c')return '코드 '+lb(v);if(kind==='p')return '코드 쌍 '+v.split('>').map(lb).join(' → ');if(kind==='p')return '코드 쌍 '+v.replace('>',' → ');if(kind==='g')return PROGMAP[v]?PROGMAP[v].n:v;}
+  if(m==='rhythm'){if(kind==='p')return PAT[v]?PAT[v].n:v;if(kind==='b'){const [sig,k2]=v.split('|');return `${sig} ${+k2+1}박째`;}if(kind==='s')return '박자 '+v;
+    if(kind==='o'){const [fam,off]=v.split('|');return (fam==='compound'?'겹박 ':'')+({0:'박 머리',12:'16분 2번째',24:'8분 뒷박',36:'16분 4번째',48:'8분 3번째',60:'16분 6번째',16:'셋잇단 2번째',32:'셋잇단 3번째',6:'32분 뒷자리'}[off]||off+'틱');}if(kind==='e')return {tie:'붙임줄',rest:'쉼표',sync:'당김음'}[v]||v;if(kind==='v')return (RDUR.find(x=>x[0]==v)||[0,v])[1]+' 길이';}
+  return k;}
+const ADAPT_KIND={d:'도수 (Scale Degree)',l:'도약 (Leap)',rest:'쉼표',oct:'옥타브',v:'음 길이 (Note Value)',c:'코드 (Chord)',p:'코드 쌍 · 박 패턴',g:'진행 (Progression)',b:'마디 안 위치 (Beat Position)',s:'박자 (Time Signature)',o:'박 안 위치 (Onset)',e:'리듬 요소'};
+function adaptKind(m,k){if(['chord','scale','interval'].includes(m))return '';const kind=k.split(':')[0];if(m==='rhythm'&&kind==='p')return '박 패턴 (Beat Pattern)';if(m==='prog'&&kind==='p')return '코드 쌍 (Chord Pair)';return ADAPT_KIND[kind]||kind;}
+/* 기록 화면: 약점 지도 + 자주 헷갈리는 쌍 */
+function renderAdapt(){const ST={new:['처음','var(--line)'],learn:['배우는 중','var(--bad)'],known:['익힘','var(--good)'],review:['복습 차례','var(--mark)']};
+  let h='';const pairs=[];
+  for(const m of Object.keys(MODE_NAMES)){const A=adapt[m];if(!A||!Object.keys(A.items).length)continue;
+    const keys=Object.keys(A.items).filter(k=>A.items[k].t>0);const groups=groupBy(keys,k=>adaptKind(m,k));
+    const cnt={new:0,learn:0,known:0,review:0};keys.forEach(k=>cnt[adaptState(m,k)]++);
+    h+=`<details class="cgp" open><summary><b>${MODE_NAMES[m]}</b><span>익힘 ${cnt.known+cnt.review} · 배우는 중 ${cnt.learn} · ${A.n}문제</span></summary>${groups.map(g=>`${g.name?`<div class="mini" style="margin:6px 0 2px">${g.name}</div>`:''}<div class="wmap">${g.items.sort((a,b)=>(A.items[a].c/A.items[a].t)-(A.items[b].c/A.items[b].t)).map(k=>{const it=A.items[k],st=adaptState(m,k),acc=Math.round(it.c/it.t*100);
+      return `<span class="wchip" style="--c:${ST[st][1]}" title="${ST[st][0]} · ${it.c}/${it.t}">${adaptLabel(m,k)}<small>${acc}% · ${ST[st][0]}</small></span>`;}).join('')}</div>`).join('')}</details>`;
+    keys.forEach(k=>{for(const o in A.items[k].conf){if(k<o)pairs.push({m,a:k,b:o,n:A.items[k].conf[o]});}});}
+  $('#st-adapt').innerHTML=h||'<p class="mini">아직 데이터가 없어요. 문제를 풀면 항목별로 처음 → 배우는 중 → 익힘 상태가 쌓여요.</p>';
+  pairs.sort((a,b)=>b.n-a.n);const top=pairs.slice(0,12);
+  $('#st-conf').innerHTML=top.length?`<table class="st"><thead><tr><th>영역</th><th>헷갈리는 쌍</th><th class="n">횟수</th></tr></thead><tbody>${top.map(x=>`<tr><td>${MODE_NAMES[x.m]}</td><td>${adaptLabel(x.m,x.a)} ↔ ${adaptLabel(x.m,x.b)}</td><td class="n">${x.n}</td></tr>`).join('')}</tbody></table><div class="tip">틀렸을 때 대신 고른 답을 세요. 적응 출제가 켜져 있으면 이 쌍이 같은 묶음에서 더 자주 나와요.</div>`:'<p class="mini">아직 헷갈린 기록이 없어요.</p>';}
 
 /* ---------- 난이도 / 설정 저장 ---------- */
 const LEVELS=[['1','쉬움'],['2','보통'],['3','어려움'],['4','전문가'],['c','사용자']];
@@ -1162,7 +1225,7 @@ function genMelody(){
   const low=tonic-below,high=tonic+range;const pool=[];for(let m=low;m<=high;m++)if(sc.iv.includes(mod(m-tonic)))pool.push(m);
   let idx=$('#mel-start').checked?pool.indexOf(tonic):rnd(pool.length);const notes=[pool[idx]];
   for(let i=1;i<len;i++){const cands=[];for(let k=-leap;k<=leap;k++){const j=idx+k;if(j<0||j>=pool.length)continue;cands.push(k);}
-    const k=wpick(cands,k=>k===0?0.25:1/Math.abs(k));idx+=k;notes.push(pool[idx]);}
+    const k=wpick(cands,k=>(k===0?0.25:1/Math.abs(k))*adaptW('melody','mel','d:'+mod(pool[idx+k]-tonic))*adaptW('melody','mel','l:'+k));idx+=k;notes.push(pool[idx]);}
   if($('#mel-end').checked&&len>1){const tons=pool.filter(m=>mod(m-tonic)===0);const prev=notes[len-2];notes[len-1]=tons.reduce((a,b)=>Math.abs(b-prev)<Math.abs(a-prev)?b:a);}
   const ev=[];let pad=0;
   if($('#mel-rhy').checked){const A=melAllow();const cells=MCELLS.filter(c=>c.every(b=>A.has(MVAL[b])));if(!cells.length)cells.push([1]);
@@ -1170,8 +1233,8 @@ function genMelody(){
     while(ni<len-1){const left=len-1-ni,room=MBAR-pos;
       let opts=cells.filter(c=>c.length<=left&&c.reduce((a,b)=>a+b,0)<=room);if(!opts.length)opts=[[1]];
       if(opts.some(c=>c[0]<3)&&Math.random()<0.6)opts=opts.filter(c=>c[0]<3); /* 3·4박짜리는 덜 나오게 */
-      const c=pick(opts);
-      const restFirst=A.has('r'+MVAL[c[0]])&&ev.length>0&&Math.random()<0.22&&ev[ev.length-1].m!==null;
+      const c=adaptOn('mel')?wpick(opts,c=>c.reduce((a,b)=>a+adaptW('melody','mel','v:'+b),0)/c.length):pick(opts);
+      const restFirst=A.has('r'+MVAL[c[0]])&&ev.length>0&&Math.random()<0.22*clampW(adaptW('melody','mel','rest'),0.5,2.5)&&ev[ev.length-1].m!==null;
       c.forEach((b,j)=>{if(j===0&&restFirst)ev.push({m:null,d:b});else if(ni<len-1)ev.push({m:notes[ni++],d:b});else ev.push({m:null,d:b});pos=(pos+b)%MBAR;});}
     /* 마지막 음: 마디 끝까지 채우는 길이 중 허용된 가장 긴 것. 모자라면 쉼표로 마디를 채운다(표시용) */
     const room=MBAR-pos;const prefs=[4,3,2,1].filter(d=>d<=room&&A.has(MVAL[d]));const fin=prefs.length?prefs[0]:1;
@@ -1240,7 +1303,16 @@ function melCheck(){if(!M.q||M.checked)return;const q=M.q,L=q.ev.length,show=mel
   const give=$('#mel-give').checked;const graded=[...Array(N).keys()].filter(i=>!(give&&i===0));
   const n=res.filter(Boolean).length,rn=rres?rres.filter(Boolean).length:0;const ok=n===N&&(!rres||rn===N);
   const gn=graded.filter(i=>res[i]).length,grn=rres?graded.filter(i=>rres[i]).length:0,GL=Math.max(1,graded.length);
-  record('melody',q.sc.n,ok);if(rres)record('melody','리듬 (멜로디 속)',rn===N);sessAdd('melody',ok,rres?(gn+grn)/(2*GL):gn/GL);
+  record('melody',q.sc.n,ok);if(rres)record('melody','리듬 (멜로디 속)',rn===N);
+  /* 적응 기록: 도수·도약·쉼표·옥타브·음 길이 */
+  {const deg=m=>mod(m-q.tonic);const scIdx=m=>{const i=q.sc.iv.indexOf(deg(m));return i<0?null:Math.floor((m-q.tonic)/12)*q.sc.iv.length+i;};
+   for(let i=0;i<L;i++){if(give&&i===0)continue;const e=q.ev[i],a=M.ans[i];const isNote=a!=null&&a!=='R';
+     if(e.m==null)adaptRecord('melody','rest',res[i],isNote?'d:'+deg(a):null);
+     else{const octOnly=!res[i]&&isNote&&mod(a)===mod(e.m);adaptRecord('melody','d:'+deg(e.m),res[i]||octOnly,isNote?'d:'+deg(a):(a==='R'?'rest':null));if(octOnly)adaptRecord('melody','oct',false);
+       const pe=q.ev[i-1];if(i>0&&pe&&pe.m!=null){const ti=scIdx(e.m),pi=scIdx(pe.m);const pa=M.ans[i-1];const ua=(isNote&&pa!=null&&pa!=='R')?scIdx(a)-scIdx(pa):null;
+         if(ti!=null&&pi!=null)adaptRecord('melody','l:'+(ti-pi),res[i]&&res[i-1],(ua!=null&&!isNaN(ua)&&ua!==ti-pi)?'l:'+ua:null);}}
+     if(rres&&a!=null)adaptRecord('melody','v:'+e.d,rres[i],M.dur[i]!==e.d?'v:'+M.dur[i]:null);}}
+  sessAdd('melody',ok,rres?(gn+grn)/(2*GL):gn/GL);
   const ansSeq=[...q.ev,...(q.pad>0?splitDur(q.pad).map(d=>({m:null,d,ghost:true})):[])];
   if(rh)safeDraw(()=>drawMeasures($('#mel-staff-ans'),{clef:q.clef,keySig:q.sp.keySig,timeSig:'4/4',title:'정답 악보 (Answer)',measures:melMeasures(ansSeq,false).map(b=>melItems(b,q.clef,q.sp))}));
   else safeDraw(()=>drawSeq($('#mel-staff-ans'),{clef:q.clef,keySig:q.sp.keySig,title:'정답 악보 (Answer)',items:melItems(q.ev,q.clef,q.sp)}));
@@ -1275,7 +1347,7 @@ function buildPiano(el,low,high,onPress){
 const C={q:null,done:false};
 PRESETS.chord=lv=>{const ids=CHORDS.filter(c=>lv>=4?true:lv===3?c.lv<=3&&c.g!=='얼터드 텐션 (Altered Tension)'||['7b9','7s9'].includes(c.id):c.lv<=lv).map(c=>c.id);
   setChecked($('#ch-types'),lv===1?['maj','m']:lv===2?['maj','m','dim','aug','sus4','maj7','7','m7','m7b5']:ids);
-  $('#ch-voice').value=lv<=2?'close':lv===3?'std':'open';$('#ch-mode').value=lv===1?'both':'block';$('#ch-root').value='r';$('#ch-weak').checked=lv>=3;};
+  $('#ch-voice').value=lv<=2?'close':lv===3?'std':'open';$('#ch-mode').value=lv===1?'both':'block';$('#ch-root').value='r';$('#ch-weak').checked=true;};
 function voice(root,iv,vm){
   if(vm==='std')return iv.map(i=>root+i);
   if(vm==='open'){const up=iv.filter(i=>i!==0).map(i=>root+i+(i<7?12:0));return [root-12,...up].sort((a,b)=>a-b);}
@@ -1287,7 +1359,7 @@ function chPlay(notes,mode){stopAll();let t=now();mode=mode||$('#ch-mode').value
   if(mode==='arp'||mode==='both'){const g=0.32/spd('chord');notes.forEach((m,i)=>piano(m,t+i*g,mode==='arp'?(1.6-i*0.1)/Math.min(1,spd('chord')):0.6/spd('chord')));t+=notes.length*g+0.25;}
   if(mode==='block'||mode==='both')chordAt(notes,t,1.8/Math.min(1,spd('chord')));}
 function chNew(){stopAll();let types=checked($('#ch-types'));if(types.length<2){types=['maj','m'];}
-  const id=$('#ch-weak').checked?wpick(types,x=>weakWeight('chord',CH[x].disp)):pick(types);
+  const id=adaptPick('chord','ch',types,x=>x);
   const rv=$('#ch-root').value,rpc=rv==='r'?rnd(12):+rv;const root=48+rpc+(rpc<4?12:0);const vm=$('#ch-voice').value;
   C.q={id,root,vm,notes:voice(root,CH[id].iv,vm),types};C.done=false;
   renderChoices($('#ch-choices'),types.map(t=>({id:t,label:CH[t].disp,sub:CH[t].kr})),chAnswer,it=>CH[it.id].g);
@@ -1295,7 +1367,7 @@ function chNew(){stopAll();let types=checked($('#ch-types'));if(types.length<2){
 function chAnswer(it,btn){if(C.done)return;C.done=true;const q=C.q,ok=it.id===q.id;btn.classList.add(ok?'right':'wrong');
   if(!ok){const rb=revealChoice($('#ch-choices'),q.id);if(rb)rb.classList.add('right');}
   const nm=pcName(mod(q.root),rootFlat(q.root),true)+CH[q.id].sym;
-  record('chord',CH[q.id].disp,ok);sessAdd('chord',ok);
+  record('chord',CH[q.id].disp,ok);adaptRecord('chord',q.id,ok,it.id);sessAdd('chord',ok);
   feedback($('#ch-fb'),ok,ok?`정답! ${nm} · ${CH[q.id].kr}`:`정답은 ${CH[q.id].disp} · ${CH[q.id].kr}였어요.`,`이번 코드: ${nm} · 구성음 (Chord Tones) ${q.notes.map(m=>pcName(m,rootFlat(q.root))).join(' ')}`);
   cmpButtons($('#ch-cmp'),()=>chPlay(q.notes),ok?null:()=>chPlay(voice(q.root,CH[it.id].iv,q.vm==='inv'?'close':q.vm)),`내 답 듣기 · ${CH[it.id].disp}`);
   {const mine=voice(q.root,CH[it.id].iv,q.vm==='inv'?'close':q.vm);const ch=[{midis:q.notes,spell:chordSpeller(mod(q.root),q.id,rootFlat(q.root)),top:nm,bottom:'정답',color:ok?null:GOODC}];
@@ -1380,7 +1452,9 @@ PRESETS.prog=(lv,keepSrc)=>{const mode=$('#pg-mode').value;const V=VOCAB[mode];
   $('#pg-start').checked=lv<=3;$('#pg-resolve').checked=true;$('#pg-ref').checked=lv<=2;$('#pg-tempo').value={1:80,2:90,3:96,4:110}[lv];$('#pg-key').value='r';};
 function genProg(){
   const kv=$('#pg-key').value,key=kv==='r'?rnd(12):+kv;
-  if($('#pg-src').value==='genre'){let pids=checked($('#pg-progs'));if(!pids.length)pids=['axis'];const P=PROGMAP[pick(pids)];const V=VOCAB[P.mode];
+  if($('#pg-src').value==='genre'){let pids=checked($('#pg-progs'));if(!pids.length)pids=['axis'];
+    /* 진행 자체의 약점 + 그 진행에 든 코드들의 약점 평균 */
+    const P=PROGMAP[adaptOn('pg')?wpick(pids,id=>{const pp=PROGMAP[id];const cw=pp.seq.reduce((a,c)=>a+adaptW('prog','pg','c:'+c),0)/pp.seq.length;return adaptW('prog','pg','g:'+id)*(0.5+0.5*cw);}):pick(pids)];const V=VOCAB[P.mode];
     const seq=P.seq.map(id=>V.find(v=>v.id===id));const used=new Set();pids.forEach(pid=>{const pp=PROGMAP[pid];if(pp.mode===P.mode)pp.seq.forEach(x=>used.add(x));});
     V.filter(v=>v.cat.startsWith('다이아토닉 3화음')&&v.lv<=2).forEach(v=>used.add(v.id));
     return {mode:P.mode,key,seq,flat:useFlat(key,P.mode==='minor'?[0,3]:[0,4]),pool:V.filter(v=>used.has(v.id)),prog:P};}
@@ -1391,7 +1465,7 @@ function genProg(){
     if(i===0&&$('#pg-start').checked){seq.push(tonicV);continue;}
     const prev=seq[i-1];
     if(prev&&isSec(prev)&&$('#pg-resolve').checked){const tgt=mod(prev.r+5);const opts=pool.filter(v=>v.r===tgt&&!isSec(v));if(opts.length&&Math.random()<0.85){seq.push(pick(opts));continue;}}
-    let c,guard=0;do{c=pick(pool);guard++;}while(guard<30&&prev&&(c.id===prev.id||(i===len-1&&isSec(c))));seq.push(c);
+    let c,guard=0;do{c=adaptOn('pg')?wpick(pool,v=>adaptW('prog','pg','c:'+v.id)*(prev?clampW(adaptW('prog','pg','p:'+prev.id+'>'+v.id),0.5,3):1)):pick(pool);guard++;}while(guard<30&&prev&&(c.id===prev.id||(i===len-1&&isSec(c))));seq.push(c);
   }
   return {mode,key,seq,flat:useFlat(key,mode==='minor'?[0,3]:[0,4]),pool};}
 function progVoicings(key,seq){const out=[];let prevMean=64;
@@ -1424,7 +1498,9 @@ function pgSlots(res){const q=G.q;$('#pg-slots').innerHTML=q.seq.map((v,i)=>{con
     return {midis:progVoicings(q.key,[v])[0],spell:chordSpeller(mod(q.key+v.r),v.t,fl),top:chName(v,q.key,q.flat),bottom:v.lb,color:res?(res[i]?GOODC:BADC):null};})}));}
 function pgCheck(){if(!G.q||G.checked)return;const q=G.q;if(G.ans.some(a=>a==null)){feedback($('#pg-fb'),false,'빈 칸이 있어요.','모든 칸을 채운 뒤 채점하세요.');return;}
   G.checked=true;const res=q.seq.map((v,i)=>sameChord(q.pool.find(x=>x.id===G.ans[i]),v));pgSlots(res);
-  const given=$('#pg-start').checked;q.seq.forEach((v,i)=>{if(!(i===0&&given))record('prog',v.lb,res[i]);});
+  const given=$('#pg-start').checked;q.seq.forEach((v,i)=>{if(i===0&&given)return;record('prog',v.lb,res[i]);adaptRecord('prog','c:'+v.id,res[i],'c:'+G.ans[i]);
+    if(i>0)adaptRecord('prog','p:'+q.seq[i-1].id+'>'+v.id,res[i]&&res[i-1]);});
+  if(q.prog)adaptRecord('prog','g:'+q.prog.id,res.every(Boolean));
   const n=res.filter(Boolean).length,ok=n===res.length;const graded=res.filter((x,i)=>!(i===0&&given));const score=graded.length?graded.filter(Boolean).length/graded.length:1;
   sessAdd('prog',ok,score);
   feedback($('#pg-fb'),ok,(ok?'정답! 진행을 전부 맞혔어요!':`${res.length}개 중 ${n}개 맞았어요.`)+(q.prog?` <span style="font-weight:400">— ${q.prog.n} · ${q.prog.g.map(x=>GENRES[x].split(' (')[0]).join(', ')}</span>`:''),'정답: '+q.seq.map(v=>`<b>${v.lb}</b> (${chName(v,q.key,q.flat)})`).join(' → '));
@@ -1453,17 +1529,22 @@ const C96=[[96],{s:[72,24]},{s:[24,48,24]},{s:[24,72]}];
 function cellOK(c,A){if(Array.isArray(c))return c.every(d=>A.has(VALKEY[d]));if(c.t)return A.has('trip')&&c.t.every(d=>A.has(d===32?'q':'8'));return A.has('sync')&&c.s.every(d=>A.has(VALKEY[d]));}
 function pushCell(out,c){if(Array.isArray(c))c.forEach(d=>out.push(ev(d)));else if(c.t){const id=TGID++;c.t.forEach(d=>out.push(ev(d,{tg:id,nom:d===32?'q':'8',tcap:48})));}else c.s.forEach(d=>out.push(ev(d)));}
 function cellsFor(gl,A){const o=(gl===72?C72:C48).filter(c=>cellOK(c,A));return o.length?o:[[gl]];}
-function genScoreBar(sig,A,restP){const G=SIGS[sig].g,total=sigTicks(sig);let out=[];let gi=0,pos=0;
+/* 묶음 안 소리 시작 위치(박 머리=0, 8분 뒷박=24 …)들의 약점 가중치 중 가장 큰 값 */
+function cellOffsets(c){const ds=Array.isArray(c)?c:(c.t||c.s);const out=[];let p=0;ds.forEach(d=>{out.push(p);p+=d;});return out;}
+function cellW(c,fam){const base=fam==='compound'?72:48;return Math.max(...cellOffsets(c).map(o=>adaptW('rhythm','rh','o:'+fam+'|'+(o%base))));}
+const pickCell=(cells,fam)=>adaptOn('rh')?wpick(cells,c=>cellW(c,fam)):pick(cells);
+function genScoreBar(sig,A,restP){const G=SIGS[sig].g,total=sigTicks(sig);let out=[];let gi=0,pos=0;const fam=famOf(sig);
+  if(adaptOn('rh')){restP=restP*clampW(adaptW('rhythm','rh','e:rest'),0.5,2.5);}
   while(gi<G.length){const gl=G[gi];
     if(pos===0&&total===192&&A.has('w')&&Math.random()<0.1){out.push(ev(192));break;}
     if(pos===0&&(total===144||total===192)&&gl===48&&A.has('hd')&&Math.random()<0.15){out.push(ev(144));pos+=144;gi+=3;continue;}
-    if(gl===48&&G[gi+1]===48&&pos%96===0&&Math.random()<0.35){const o=C96.filter(c=>cellOK(c,A));if(o.length){pushCell(out,pick(o));pos+=96;gi+=2;continue;}}
-    if(gl===96){const o=C96.filter(c=>cellOK(c,A));if(o.length&&Math.random()<0.45)pushCell(out,pick(o));else{pushCell(out,pick(cellsFor(48,A)));pushCell(out,pick(cellsFor(48,A)));}pos+=96;gi++;continue;}
-    pushCell(out,pick(cellsFor(gl,A)));pos+=gl;gi++;}
+    if(gl===48&&G[gi+1]===48&&pos%96===0&&Math.random()<0.35*clampW(adaptW('rhythm','rh','e:sync'),0.5,2)){const o=C96.filter(c=>cellOK(c,A));if(o.length){pushCell(out,pickCell(o,fam));pos+=96;gi+=2;continue;}}
+    if(gl===96){const o=C96.filter(c=>cellOK(c,A));if(o.length&&Math.random()<0.45)pushCell(out,pickCell(o,fam));else{pushCell(out,pickCell(cellsFor(48,A),fam));pushCell(out,pickCell(cellsFor(48,A),fam));}pos+=96;gi++;continue;}
+    pushCell(out,pickCell(cellsFor(gl,A),fam));pos+=gl;gi++;}
   if(A.has('rest')&&restP>0)out.forEach(e=>{if(Math.random()<restP)e.rest=true;});
   if(out.every(e=>e.rest))out[0].rest=false;
   if(A.has('tie')){const bnd=new Set();let a=0;G.forEach(g=>{a+=g;bnd.add(a);});let p=0;const cand=[];out.forEach((e,i)=>{p+=e.d;const n=out[i+1];if(n&&bnd.has(p)&&!e.rest&&!n.rest&&!e.tg&&!n.tg)cand.push(i);});
-    if(cand.length&&Math.random()<0.6)out[pick(cand)].tie=true;}
+    if(cand.length&&Math.random()<0.6*clampW(adaptW('rhythm','rh','e:tie'),0.5,1.6))out[pick(cand)].tie=true;}
   return out;}
 function patEvents(id){const g=PAT[id].g,n=g.length,trip=n===3,u=trip?16:12,tg=trip?TGID++:null;const out=[];const f=g.indexOf(1);const nom=k=>trip?(k===1?'8':'q'):undefined;const o=k=>trip?{tg,nom:nom(k),tcap:48}:{};
   if(f<0){out.push(ev(n*u,{rest:true}));return out;}
@@ -1489,11 +1570,11 @@ PRESETS.rhythm=lv=>{const P={1:{inp:'pattern',sigs:['4/4'],bars:'1',tempo:70,mix
   3:{inp:'score',sigs:['4/4','3/4','6/8'],bars:'2',tempo:80,mixed:false,vals:['h','q','qd','8','8d','16','rest','tie'],rp:'0.1'},4:{inp:'score',sigs:['4/4','3/4','2/4','5/4','6/8','7/8'],bars:'4',tempo:90,mixed:true,vals:NV_ALL,rp:'0.2'}}[lv];
   $('#rh-input').value=P.inp;setChecked($('#rh-sigs'),P.sigs);$('#rh-bars').value=P.bars;$('#rh-tempo').value=P.tempo;$('#rh-mixed').checked=P.mixed;setChecked($('#rh-vals'),P.vals);$('#rh-restp').value=P.rp;
   rhPatPreset(lv);$('#rh-metro').checked=false;$('#rh-count').checked=true;rhInputToggle();};
-function rhNew(){stopAll();const mode=rhInput();const sigs=rhSelSigs();const nb=+$('#rh-bars').value||1;const mixed=$('#rh-mixed').checked;const fixed=pick(sigs);
-  const bars=[];for(let b=0;b<nb;b++){const sig=mixed?pick(sigs):fixed;
+function rhNew(){stopAll();const mode=rhInput();const sigs=rhSelSigs();const nb=+$('#rh-bars').value||1;const mixed=$('#rh-mixed').checked;const pickSig=()=>adaptPick('rhythm','rh',sigs,x=>'s:'+x);const fixed=pickSig();
+  const bars=[];for(let b=0;b<nb;b++){const sig=mixed?pickSig():fixed;
     if(mode==='score')bars.push({sig,ev:genScoreBar(sig,rhAllow(),+$('#rh-restp').value)});
     else{const fam=famOf(sig);const list=fam==='compound'?COMPOUND_PATS:SIMPLE_PATS;let ids=checked($('#rh-pats')).filter(id=>list.some(p=>p.id===id));if(!ids.length)ids=list.filter(p=>p.lv===1).map(p=>p.id);
-      const n=SIGS[sig].g.length;let beats,guard=0;do{beats=[];for(let k=0;k<n;k++)beats.push(ids.length>1?wpick(ids,id=>PAT[id].g.every(v=>!v)?0.35:1):ids[0]);guard++;}while(guard<20&&beats.every(id=>PAT[id].g.every(v=>!v)));
+      const n=SIGS[sig].g.length;let beats,guard=0;do{beats=[];for(let k=0;k<n;k++)beats.push(ids.length>1?wpick(ids,id=>(PAT[id].g.every(v=>!v)?0.35:1)*adaptW('rhythm','rh','p:'+id)):ids[0]);guard++;}while(guard<20&&beats.every(id=>PAT[id].g.every(v=>!v)));
       if(b===0&&PAT[beats[0]].g[0]===0&&ids.some(id=>PAT[id].g[0]===1)&&Math.random()<0.7)beats[0]=pick(ids.filter(id=>PAT[id].g[0]===1));
       bars.push({sig,beats,ev:beats.flatMap(patEvents)});}}
   const meta=[];bars.forEach((b,bi)=>{if(b.beats)b.beats.forEach((id,k)=>meta.push({bar:bi,k,fam:famOf(b.sig)}));});
@@ -1577,12 +1658,20 @@ function onsets(bars){let tied=false;return bars.map(b=>{let p=0;const s=[];b.ev
 function rhCheck(){if(!R.q||R.checked)return;const q=R.q;
   if(q.mode==='pattern'){if(R.ans.some(a=>!a)){feedback($('#rh-fb'),false,'빈 박이 있어요.','쉬는 박은 쉼표 패턴을 골라 주세요.');return;}
     R.checked=true;const res=q.meta.map((m,i)=>PAT[q.bars[m.bar].beats[m.k]].g.join()===PAT[R.ans[i]].g.join());rhView(res);
-    q.meta.forEach((m,i)=>record('rhythm',PAT[q.bars[m.bar].beats[m.k]].n,res[i]));const n=res.filter(Boolean).length,ok=n===res.length;sessAdd('rhythm',ok,n/res.length);
+    q.meta.forEach((m,i)=>{const cid=q.bars[m.bar].beats[m.k];record('rhythm',PAT[cid].n,res[i]);
+      adaptRecord('rhythm','p:'+cid,res[i],'p:'+R.ans[i]);adaptRecord('rhythm','b:'+q.bars[m.bar].sig+'|'+m.k,res[i]);if(PAT[cid].g.every(v=>!v))adaptRecord('rhythm','e:rest',res[i]);});
+    q.bars.forEach((b,i)=>adaptRecord('rhythm','s:'+b.sig,b.beats.every((_,k)=>res[q.meta.findIndex(m=>m.bar===i&&m.k===k)])));
+    const n=res.filter(Boolean).length,ok=n===res.length;sessAdd('rhythm',ok,n/res.length);
     feedback($('#rh-fb'),ok,ok?'정답! 리듬을 정확히 받아 적었어요!':`${res.length}박 중 ${n}박 맞았어요.`,'소리 시작점만 채점하고 음 길이는 보지 않아요.');}
   else{const bad=R.sbars.findIndex(b=>barUsed(b)<sigTicks(b.sig)-0.01||openTrip(b));if(bad>=0){feedback($('#rh-fb'),false,`${bad+1}마디가 아직 다 채워지지 않았어요.`,'쉬는 자리는 쉼표로 채워 주세요.');R.sbar=bad;sRender();return;}
     R.checked=true;const A=onsets(q.bars),U=onsets(R.sbars);const res=A.map((a,i)=>a.join()===U[i].join());
     R.sbars.forEach((b,i)=>{let p=0,tied=false;b.ev.forEach(e=>{const on=!e.rest&&!tied;e.color=res[i]?GOODC:(on&&!A[i].includes(Math.round(p))?BADC:null);tied=!e.rest&&!!e.tie;p+=e.d;});});
-    sRender(res);q.bars.forEach((b,i)=>record('rhythm','악보 입력 · '+b.sig,res[i]));const n=res.filter(Boolean).length,ok=n===res.length;sessAdd('rhythm',ok,n/res.length);
+    sRender(res);q.bars.forEach((b,i)=>{record('rhythm','악보 입력 · '+b.sig,res[i]);adaptRecord('rhythm','s:'+b.sig,res[i]);
+      /* 박 안 위치별: 정답 시작점을 들었는지, 없는 자리에 넣었는지 */
+      const fam=famOf(b.sig),base=fam==='compound'?72:48;A[i].forEach(p=>adaptRecord('rhythm','o:'+fam+'|'+(p%base),U[i].includes(p)));U[i].forEach(p=>{if(!A[i].includes(p))adaptRecord('rhythm','o:'+fam+'|'+(p%base),false);});
+      if(b.ev.some(e=>e.tie))adaptRecord('rhythm','e:tie',res[i]);if(b.ev.some(e=>e.rest))adaptRecord('rhythm','e:rest',res[i]);
+      {let p=0,sync=false;const G=SIGS[b.sig].g;b.ev.forEach(e=>{let acc=0;for(const g of G){if(p>acc&&p<acc+g&&p+e.d>acc+g+0.01)sync=true;acc+=g;}p+=e.d;});if(sync)adaptRecord('rhythm','e:sync',res[i]);}});
+    const n=res.filter(Boolean).length,ok=n===res.length;sessAdd('rhythm',ok,n/res.length);
     feedback($('#rh-fb'),ok,ok?'정답! 리듬을 정확히 받아 적었어요!':`${res.length}마디 중 ${n}마디 맞았어요.`,'소리 시작 위치로 채점해요. 붙임줄로 이어진 음은 한 번만 소리 나요. 내 답의 빨간 음표는 정답에 없는 자리예요.');}
   const ansView=q.bars.map((b,i)=>{const U=onsets(ansBars())[i]||[];let p=0,tied=false;return {sig:b.sig,ev:b.ev.map(e=>{const on=!e.rest&&!tied;const c=Object.assign({},e,{color:on&&!U.includes(Math.round(p))?BADC:null});tied=!e.rest&&!!e.tie;p+=e.d;return c;})};});
   safeDraw(()=>drawBars($('#rh-answer'),{bars:ansView,title:'정답 악보 (Answer) · 빨간 음표는 내가 놓친 자리'}));
@@ -1598,17 +1687,17 @@ function rhKey(e){if(curTab!=='rhythm'||!R.q||R.q.mode!=='score')return false;co
 const S={q:null,done:false};
 const scaleIdKeys=()=>Object.keys(SCALES).filter(k=>k!=='chromatic');
 PRESETS.scale=lv=>{const L={1:['major','minor','majpent','minpent'],2:['major','minor','harmmin','melmin','dorian','lydian','mixolydian','majpent','minpent','blues'],
-  3:scaleIdKeys().filter(k=>SCALES[k].lv<=3),4:scaleIdKeys()}[lv];setChecked($('#sc-scales'),L);$('#sc-dir').value=lv<=2?'up':'updown';$('#sc-tempo').value={1:96,2:110,3:126,4:140}[lv];$('#sc-chord').checked=lv<=1;$('#sc-weak').checked=lv>=3;};
+  3:scaleIdKeys().filter(k=>SCALES[k].lv<=3),4:scaleIdKeys()}[lv];setChecked($('#sc-scales'),L);$('#sc-dir').value=lv<=2?'up':'updown';$('#sc-tempo').value={1:96,2:110,3:126,4:140}[lv];$('#sc-chord').checked=lv<=1;$('#sc-weak').checked=true;};
 function scNotes(id,tonic){const iv=SCALES[id].iv;const up=[...iv.map(i=>tonic+i),tonic+12];const d=$('#sc-dir').value;return d==='up'?up:d==='down'?up.slice().reverse():[...up,...up.slice(0,-1).reverse()];}
 function scPlay(id,tonic){stopAll();let t=now();const e=60/bpm('scale')/2*2;
   if($('#sc-chord').checked){const iv=SCALES[id].iv;const third=iv.includes(4)?4:iv.includes(3)?3:4;chordAt([tonic-12,tonic,tonic+third,tonic+(iv.includes(7)?7:6)],t,1);t+=1.4;}
   const ns=scNotes(id,tonic);ns.forEach((m,i)=>piano(m,t+i*e,i===ns.length-1?1.2:e*1.05));}
 function scNew(){stopAll();let ids=checked($('#sc-scales'));if(ids.length<2)ids=['major','minor'];
-  const id=$('#sc-weak').checked?wpick(ids,x=>weakWeight('scale',SCALES[x].n)):pick(ids);const tonic=55+rnd(10);S.q={id,tonic,ids};S.done=false;
+  const id=adaptPick('scale','sc',ids,x=>x);const tonic=55+rnd(10);S.q={id,tonic,ids};S.done=false;
   renderChoices($('#sc-choices'),ids.map(k=>({id:k,label:SCALES[k].n,sub:SCALES[k].s||''})),scAnswer,it=>SCALES[it.id].g);$('#sc-fb').innerHTML='';$('#sc-cmp').innerHTML='';clearStaff($('#sc-staff'));clearStaff($('#sc-staff2'));needRange(tonic-12,tonic+12);autoPlay(()=>scPlay(id,tonic));}
 function scRef(){const q=S.q;if(!q)return;stopAll();const iv=SCALES[q.id].iv;const third=iv.includes(4)?4:iv.includes(3)?3:4;chordAt([q.tonic-12,q.tonic,q.tonic+third,q.tonic+(iv.includes(7)?7:6)],now(),1.2);}
 function scAnswer(it,btn){if(S.done)return;S.done=true;const q=S.q,ok=it.id===q.id;btn.classList.add(ok?'right':'wrong');if(!ok){const rb=revealChoice($('#sc-choices'),q.id);if(rb)rb.classList.add('right');}
-  record('scale',SCALES[q.id].n,ok);sessAdd('scale',ok);const fl=useFlat(mod(q.tonic),SCALES[q.id].iv);
+  record('scale',SCALES[q.id].n,ok);adaptRecord('scale',q.id,ok,it.id);sessAdd('scale',ok);const fl=useFlat(mod(q.tonic),SCALES[q.id].iv);
   feedback($('#sc-fb'),ok,ok?`정답! ${SCALES[q.id].n}`:`정답은 ${SCALES[q.id].n}였어요.`,`${pcName(q.tonic,fl)} ${SCALES[q.id].n}: ${SCALES[q.id].iv.map(i=>pcName(q.tonic+i,fl)).join(' ')}`);
   cmpButtons($('#sc-cmp'),()=>scPlay(q.id,q.tonic),ok?null:()=>scPlay(it.id,q.tonic),`내 답 듣기 · ${SCALES[it.id].n}`);
   {const sp=speller(q.id,mod(q.tonic),fl);const ns=[...SCALES[q.id].iv.map(i=>q.tonic+i),q.tonic+12];safeDraw(()=>drawSeq($('#sc-staff'),{title:(ok?'':'정답 · ')+SCALES[q.id].n,items:ns.map(m=>({keys:[sp.spell(m)],dur:'q'}))}));
@@ -1619,15 +1708,15 @@ function scAnswer(it,btn){if(S.done)return;S.done=true;const q=S.q,ok=it.id===q.
 /* ================= 음정 ================= */
 const I={q:null,done:false};
 PRESETS.interval=lv=>{const ids=lv===1?['i2','i4','i7','i12']:lv===2?['i1','i2','i3','i4','i5','i7','i9','i12']:INTERVALS.filter(x=>x.lv<=(lv===3?3:4)).map(x=>x.id);
-  setChecked($('#iv-list'),ids);$('#iv-up').checked=true;$('#iv-down').checked=lv>=2;$('#iv-harm').checked=lv>=3;$('#iv-weak').checked=lv>=3;};
+  setChecked($('#iv-list'),ids);$('#iv-up').checked=true;$('#iv-down').checked=lv>=2;$('#iv-harm').checked=lv>=3;$('#iv-weak').checked=true;};
 function ivPlay(q){stopAll();const t=now();if(q.dir==='harm'){piano(q.a,t,1.6);piano(q.b,t,1.6);}else{const k=spd('interval');piano(q.a,t,0.9/k);piano(q.b,t+0.75/k,1.2/k);}}
 function ivNew(){stopAll();let ids=checked($('#iv-list'));if(ids.length<2)ids=['i4','i7'];const dirs=['up','down','harm'].filter(d=>$('#iv-'+d).checked);if(!dirs.length)dirs.push('up');
-  const id=$('#iv-weak').checked?wpick(ids,x=>weakWeight('interval',INTERVALS.find(i=>i.id===x).n)):pick(ids);const iv=INTERVALS.find(i=>i.id===id);const dir=pick(dirs);
+  const pair=adaptPick('interval','iv',ids.flatMap(x=>dirs.map(d=>x+':'+d)),x=>x);const [id,dir]=pair.split(':');const iv=INTERVALS.find(i=>i.id===id);
   let lo=48+rnd(16);if(lo+iv.s>84)lo=84-iv.s;const q=I.q={iv,dir,ids,a:dir==='down'?lo+iv.s:lo,b:dir==='down'?lo:lo+iv.s};I.done=false;
   $('#iv-meta').textContent={up:'상행 음정 (Ascending Melodic)',down:'하행 음정 (Descending Melodic)',harm:'화성 음정 (Harmonic) · 동시에'}[dir];
   renderChoices($('#iv-choices'),ids.map(x=>{const v=INTERVALS.find(i=>i.id===x);return {id:x,label:v.n,sub:v.a+' · 반음 '+v.s+'개'};}),ivAnswer,it=>INTERVALS.find(i=>i.id===it.id).s<=12?'옥타브 안 (Simple Interval)':'복음정 (Compound Interval)');$('#iv-fb').innerHTML='';$('#iv-cmp').innerHTML='';clearStaff($('#iv-staff'));clearStaff($('#iv-staff2'));needRange(Math.min(q.a,q.b),Math.max(q.a,q.b));autoPlay(()=>ivPlay(q));}
 function ivAnswer(it,btn){if(I.done)return;I.done=true;const q=I.q,ok=it.id===q.iv.id;btn.classList.add(ok?'right':'wrong');if(!ok){const rb=revealChoice($('#iv-choices'),q.iv.id);if(rb)rb.classList.add('right');}
-  record('interval',q.iv.n,ok);sessAdd('interval',ok);
+  record('interval',q.iv.n,ok);adaptRecord('interval',q.iv.id+':'+q.dir,ok,it.id+':'+q.dir);sessAdd('interval',ok);
   feedback($('#iv-fb'),ok,ok?`정답! ${q.iv.n}`:`정답은 ${q.iv.n}였어요.`,`${noteHTML(q.a).replace(/<\/?small>/g,'')} → ${noteHTML(q.b).replace(/<\/?small>/g,'')}`);
   {const mine=INTERVALS.find(i=>i.id===it.id);cmpButtons($('#iv-cmp'),()=>ivPlay(q),ok?null:()=>{const s=mine.s;const lo=Math.min(q.a,q.b);ivPlay({dir:q.dir,a:q.dir==='down'?lo+s:lo,b:q.dir==='down'?lo:lo+s});},`내 답 듣기 · ${mine.n}`);}
   const ivStaff=(el,s,title,color)=>{const lo=Math.min(q.a,q.b),hi=lo+s;const lk=vkey(lo,FLAT_KEYS.has(mod(lo))&&mod(lo)!==6);const STEPS={1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:5,9:5,10:6,11:6,12:7,13:8,14:8,15:9,16:9,17:10,18:10,19:11,20:12,21:12};
@@ -1640,7 +1729,7 @@ function ivAnswer(it,btn){if(I.done)return;I.done=true;const q=I.q,ok=it.id===q.
 /* ================= 코스 · 오늘의 연습 ================= */
 const IV_OCT=INTERVALS.filter(i=>i.s<=12).map(i=>i.id),IV_ALL=INTERVALS.map(i=>i.id);
 const SIMPLE_ALL=SIMPLE_PATS.map(p=>p.id),COMP_ALL=COMPOUND_PATS.map(p=>p.id);
-const UP={'iv-up':true,'iv-down':false,'iv-harm':false,'iv-weak':false},UPDOWN={'iv-up':true,'iv-down':true,'iv-harm':false,'iv-weak':false};
+const UP={'iv-up':true,'iv-down':false,'iv-harm':false},UPDOWN={'iv-up':true,'iv-down':true,'iv-harm':false};
 const RP=(ids,sigs,bars,extra={})=>({checks:{'#rh-pats':ids,'#rh-sigs':sigs},vals:Object.assign({'rh-input':'pattern','rh-bars':bars,'rh-mixed':false},extra)});
 const RS=(vals,sigs,bars,extra={})=>({checks:{'#rh-vals':vals,'#rh-sigs':sigs},vals:Object.assign({'rh-input':'score','rh-bars':bars,'rh-mixed':false,'rh-restp':'0.1'},extra)});
 const TRACKS=[
@@ -1649,24 +1738,24 @@ const TRACKS=[
   {t:'완전4도·장6도 추가',d:'상행 (Ascending)',checks:{'#iv-list':['i2','i4','i5','i7','i9','i12']},vals:UP},
   {t:'단2도·단3도·단6도 추가',d:'상행 + 하행',checks:{'#iv-list':['i1','i2','i3','i4','i5','i7','i8','i9','i12']},vals:UPDOWN},
   {t:'옥타브 안 전체',d:'트라이톤 (Tritone)·7도 포함',checks:{'#iv-list':IV_OCT},vals:UPDOWN},
-  {t:'화성 음정',d:'두 음 동시에 (Harmonic Interval)',checks:{'#iv-list':IV_OCT},vals:{'iv-up':false,'iv-down':false,'iv-harm':true,'iv-weak':false}},
-  {t:'복음정',d:'9도~13도 (Compound Interval), 모든 방향',checks:{'#iv-list':IV_ALL},vals:{'iv-up':true,'iv-down':true,'iv-harm':true,'iv-weak':false}}]},
+  {t:'화성 음정',d:'두 음 동시에 (Harmonic Interval)',checks:{'#iv-list':IV_OCT},vals:{'iv-up':false,'iv-down':false,'iv-harm':true}},
+  {t:'복음정',d:'9도~13도 (Compound Interval), 모든 방향',checks:{'#iv-list':IV_ALL},vals:{'iv-up':true,'iv-down':true,'iv-harm':true}}]},
  {mode:'chord',name:'코드 (Chord)',stages:[
   {t:'메이저 vs 마이너',d:'Major · Minor',base:1,checks:{'#ch-types':['maj','m']}},
   {t:'디미니시·오그먼트 추가',d:'Diminished · Augmented',base:2,checks:{'#ch-types':['maj','m','dim','aug']}},
   {t:'서스 코드',d:'sus2 · sus4',base:2,checks:{'#ch-types':['maj','m','sus2','sus4']}},
   {t:'기본 7화음 4종',d:'maj7 · 7 · m7 · m7♭5',base:2,checks:{'#ch-types':['maj7','7','m7','m7b5']}},
   {t:'7화음 전체',d:'dim7 · mMaj7 · 7sus4 포함',base:2,checks:{'#ch-types':['maj7','7','m7','m7b5','dim7','mmaj7','7sus4']}},
-  {t:'9th 텐션',d:'maj9 · 9 · m9 · add9 · 6/9',base:3,checks:{'#ch-types':['maj7','7','m7','maj9','9','m9','add9','69']},vals:{'ch-voice':'std','ch-weak':false}},
-  {t:'11th · 13th 텐션',d:'m11 · ♯11 · 13',base:3,checks:{'#ch-types':['m11','maj7s11','7s11','13','maj13','m13']},vals:{'ch-voice':'std','ch-weak':false},pass:.75},
-  {t:'얼터드 텐션',d:'♭9 · ♯9 · ♭13 · alt',base:4,checks:{'#ch-types':['7','7b9','7s9','7b13','7s9b13','13b9','7s11']},vals:{'ch-voice':'open','ch-weak':false},pass:.75}]},
+  {t:'9th 텐션',d:'maj9 · 9 · m9 · add9 · 6/9',base:3,checks:{'#ch-types':['maj7','7','m7','maj9','9','m9','add9','69']},vals:{'ch-voice':'std'}},
+  {t:'11th · 13th 텐션',d:'m11 · ♯11 · 13',base:3,checks:{'#ch-types':['m11','maj7s11','7s11','13','maj13','m13']},vals:{'ch-voice':'std'},pass:.75},
+  {t:'얼터드 텐션',d:'♭9 · ♯9 · ♭13 · alt',base:4,checks:{'#ch-types':['7','7b9','7s9','7b13','7s9b13','13b9','7s11']},vals:{'ch-voice':'open'},pass:.75}]},
  {mode:'scale',name:'스케일 (Scale)',stages:[
   {t:'메이저 vs 내추럴 마이너',d:'Major · Natural Minor',checks:{'#sc-scales':['major','minor']}},
   {t:'세 가지 마이너',d:'Harmonic · Melodic Minor',checks:{'#sc-scales':['major','minor','harmmin','melmin']}},
   {t:'펜타토닉 · 블루스',d:'Pentatonic · Blues',checks:{'#sc-scales':['major','minor','majpent','minpent','blues']}},
-  {t:'교회선법 7개',d:'Church Modes',base:2,checks:{'#sc-scales':['major','dorian','phrygian','lydian','mixolydian','minor','locrian']},vals:{'sc-dir':'updown','sc-weak':false},pass:.75},
-  {t:'재즈 스케일',d:'Lydian Dominant · Altered · Whole Tone · Diminished',base:3,checks:{'#sc-scales':['melmin','lyddom','altered','whole','dimhw','phrygdom']},vals:{'sc-weak':false},pass:.75},
-  {t:'모든 스케일',d:'29종 전체',base:4,checks:{'#sc-scales':Object.keys(SCALES).filter(k=>k!=='chromatic')},vals:{'sc-weak':false},pass:.7}]},
+  {t:'교회선법 7개',d:'Church Modes',base:2,checks:{'#sc-scales':['major','dorian','phrygian','lydian','mixolydian','minor','locrian']},vals:{'sc-dir':'updown'},pass:.75},
+  {t:'재즈 스케일',d:'Lydian Dominant · Altered · Whole Tone · Diminished',base:3,checks:{'#sc-scales':['melmin','lyddom','altered','whole','dimhw','phrygdom']},pass:.75},
+  {t:'모든 스케일',d:'29종 전체',base:4,checks:{'#sc-scales':Object.keys(SCALES).filter(k=>k!=='chromatic')},pass:.7}]},
  {mode:'melody',name:'멜로디 (Melody)',stages:[
   {t:'순차 진행 4음',d:'메이저, 2도 (Step)만',base:1,vals:{'mel-len':4,'mel-leap':'1'}},
   {t:'3도 도약 5음',d:'메이저',base:1,vals:{'mel-len':5,'mel-leap':'2'}},
@@ -1782,10 +1871,11 @@ function renderStats(){const rows=Object.keys(MODE_NAMES).map(m=>{const s=stats[
   $('#st-modes').innerHTML=`<table class="st"><thead><tr><th>영역</th><th class="n">맞힘 / 시도</th><th class="n">정답률</th><th></th></tr></thead><tbody>${rows}</tbody></table><div class="tip">멜로디·코드 진행·리듬은 항목(스케일, 코드, 박 패턴) 단위로도 따로 집계해요.</div>`;
   const items=[];for(const m in stats)for(const k in (stats[m].items||{})){const it=stats[m].items[k];if(it.t>=2)items.push({m,k,...it,p:it.c/it.t});}
   items.sort((a,b)=>a.p-b.p||b.t-a.t);const top=items.filter(x=>x.p<1).slice(0,14);
-  $('#st-weak').innerHTML=top.length?`<table class="st"><thead><tr><th>영역</th><th>항목</th><th class="n">정답률</th><th class="n">시도</th></tr></thead><tbody>${top.map(x=>`<tr><td>${MODE_NAMES[x.m]}</td><td>${x.k}</td><td class="n">${Math.round(x.p*100)}%</td><td class="n">${x.t}</td></tr>`).join('')}</tbody></table><div class="tip">코드·스케일·음정 설정에서 ‘약점 집중’을 켜면 이 항목들이 더 자주 나와요.</div>`:'<p class="mini">아직 데이터가 부족해요. 문제를 풀수록 여기에 자주 틀리는 항목이 모여요.</p>';}
+  renderAdapt();
+  $('#st-weak').innerHTML=top.length?`<table class="st"><thead><tr><th>영역</th><th>항목</th><th class="n">정답률</th><th class="n">시도</th></tr></thead><tbody>${top.map(x=>`<tr><td>${MODE_NAMES[x.m]}</td><td>${x.k}</td><td class="n">${Math.round(x.p*100)}%</td><td class="n">${x.t}</td></tr>`).join('')}</tbody></table><div class="tip">각 모드 설정의 ‘적응 출제 (Adaptive)’가 켜져 있으면 이 항목들이 더 자주 나와요. 아래 약점 지도에서 항목별 상태를 볼 수 있어요.</div>`:'<p class="mini">아직 데이터가 부족해요. 문제를 풀수록 여기에 자주 틀리는 항목이 모여요.</p>';}
 let resetArmed=false;
 $('#st-reset').onclick=()=>{if(!resetArmed){resetArmed=true;$('#st-confirm').textContent='한 번 더 누르면 모든 기록이 지워져요.';setTimeout(()=>{resetArmed=false;$('#st-confirm').textContent='';},4000);return;}
-  stats={};store.set('stats',stats);resetArmed=false;$('#st-confirm').textContent='기록을 지웠어요.';renderStats();};
+  stats={};store.set('stats',stats);adapt={};store.set('adapt',adapt);resetArmed=false;$('#st-confirm').textContent='기록을 지웠어요.';renderStats();};
 
 /* ================= 초기화 ================= */
 function init(){
