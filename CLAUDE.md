@@ -1,7 +1,8 @@
 # 유캔드럼 청음 트레이너 — 작업 안내
 
 ## 현재 상태
-- `index.html` 한 파일(약 1,600줄)에 HTML·CSS·JS가 모두 들어 있는 청음 훈련 웹앱이다.
+- 청음 훈련 웹앱. `index.html`은 화면 뼈대, 스타일은 `css/style.css`, 코드는 `js/` 아래 파일로 나뉘어 있다(아래 목표 구조 참고).
+- JS 파일은 일반 `<script>`로 순서대로 불러오고 전역 함수를 공유한다(모듈 import 없음). 순서: store → audio → theory → notation → ui → modes/* → course → stats → sync → main. 새 파일을 넣을 때는 `index.html`의 순서와 `sw.js`의 캐시 목록을 함께 고친다.
 - 모드: 코스(Course) / 멜로디 받아쓰기 / 코드 종류 / 코드 진행(도수) / 리듬 받아쓰기 / 스케일 / 음정 / 기록(Stats)
 - 소리: `samples/`(피아노), `samples/harp`, `samples/guitar`, `samples/drums` 의 mp3 샘플을 Web Audio API로 재생
 - 악보 표시: `vendor/vexflow.js` (VexFlow 4, 전역 `Vex.Flow`)
@@ -13,8 +14,8 @@
 - 화면 자동 확인: `tools/shot.mjs`(캡처), `tools/flow.mjs`(모든 탭×난이도×PC·휴대폰 실행 테스트). 사용법은 `tools/README.md`.
 - 기록을 기기 간에 공유하는 방안은 `docs/기록-동기화-방안.md`에 정리되어 있다(아직 구현 안 함).
 
-## 목표 구조 (리팩터링)
-기능은 그대로 유지하면서 한 파일을 아래처럼 나눈다. 빌드 도구 없이 `<script type="module">`로 불러온다.
+## 파일 구조
+아래처럼 나뉘어 있다. 전역 함수끼리 서로 부르므로 `type="module"`이 아닌 일반 스크립트로 불러온다.
 
 ```
 index.html            화면 뼈대(탭, 패널)만
