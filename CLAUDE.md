@@ -1,17 +1,22 @@
 # 유캔드럼 청음 트레이너 — 작업 안내
 
 ## 현재 상태
-- `index.html` 한 파일(약 1,600줄)에 HTML·CSS·JS가 모두 들어 있는 청음 훈련 웹앱이다.
+- 청음 훈련 웹앱. `index.html`은 화면 뼈대, 스타일은 `css/style.css`, 코드는 `js/` 아래 파일로 나뉘어 있다(아래 목표 구조 참고).
+- JS 파일은 일반 `<script>`로 순서대로 불러오고 전역 함수를 공유한다(모듈 import 없음). 순서: store → audio → theory → notation → ui → modes/* → review → course → stats → sync → main. 새 파일을 넣을 때는 `index.html`의 순서와 `sw.js`의 캐시 목록을 함께 고친다.
 - 모드: 코스(Course) / 멜로디 받아쓰기 / 코드 종류 / 코드 진행(도수) / 리듬 받아쓰기 / 스케일 / 음정 / 기록(Stats)
 - 소리: `samples/`(피아노), `samples/harp`, `samples/guitar`, `samples/drums` 의 mp3 샘플을 Web Audio API로 재생
 - 악보 표시: `vendor/vexflow.js` (VexFlow 4, 전역 `Vex.Flow`)
-- 기록 저장: localStorage (`eartr_` 접두어)
+- 기록 저장: localStorage (`eartr_` 접두어). 적응 출제 기록은 `eartr_adapt` (모드별 항목 상태·착각 쌍), 누적 정답률은 `eartr_stats`.
+- 리듬 연음: 4분음표 = 48틱 기준에 3연음(16틱)·5연음(9.6)·6연음(8)·7연음(48/7)을 소수 틱으로 넣는다. 합계는 `r6()`로 반올림해 비교. 이벤트의 `tn`이 연음 수, `tg`가 묶음 id.
+- 악보 편집: 멜로디·리듬 '내가 적은' 악보의 음표를 누르면 선택(`M.sel`, `R.sel`)되고 다음 입력으로 바로 교체된다.
+- 적응 출제 (Adaptive): 모든 모드 공통 엔진(`adaptRecord`/`adaptWeight`/`adaptPick`). 항목 key는 멜로디 `d:도수(반음)`·`l:도약(스케일 단계)`·`rest`·`oct`·`v:길이`, 코드 진행 `c:코드`·`p:앞>뒤`·`g:진행`, 리듬 `p:패턴`·`b:박자|박`·`s:박자`·`o:홑/겹|박안위치틱`·`e:tie/rest/sync`, 코드·스케일은 id, 음정은 `id:방향`.
 - 빌드 도구 없음. 정적 파일만으로 GitHub Pages에서 동작해야 한다.
 - 화면 자동 확인: `tools/shot.mjs`(캡처), `tools/flow.mjs`(모든 탭×난이도×PC·휴대폰 실행 테스트). 사용법은 `tools/README.md`.
-- 기록을 기기 간에 공유하는 방안은 `docs/기록-동기화-방안.md`에 정리되어 있다(아직 구현 안 함).
+- 기기 간 기록 공유는 학생 코드 + 구글 시트 방식으로 구현되어 있다. 설치 방법은 `docs/기록-동기화-방안.md`.
+- 반응 시간: 문제가 나온 때부터 채점까지(`QSTART`). 코드·스케일·음정에서 평소의 2.5배(최소 8초) 넘게 걸린 정답은 `slow`로 세고 연속 정답에 넣지 않는다.
 
-## 목표 구조 (리팩터링)
-기능은 그대로 유지하면서 한 파일을 아래처럼 나눈다. 빌드 도구 없이 `<script type="module">`로 불러온다.
+## 파일 구조
+아래처럼 나뉘어 있다. 전역 함수끼리 서로 부르므로 `type="module"`이 아닌 일반 스크립트로 불러온다.
 
 ```
 index.html            화면 뼈대(탭, 패널)만
@@ -28,8 +33,13 @@ js/modes/prog.js      코드 진행
 js/modes/rhythm.js    리듬 받아쓰기
 js/modes/scale.js     스케일
 js/modes/interval.js  음정
-js/course.js          코스(단계 해금, 오늘의 연습)
-js/stats.js           기록 화면
+js/review.js          틀린 문제 복습 (eartr_wrong, 문제를 그대로 저장해 다시 냄)
+js/course.js          코스(단계 해금·익힘 비율 기준, 오늘의 연습)
+js/stats.js           기록 화면 (날짜별 추세 eartr_hist, 약점 지도)
+js/sync.js            학생 코드 + 구글 시트 동기화 (eartr_sync, 3-way 병합)
+sw.js                 오프라인 캐시 (화면·코드는 network-first, 소리·vendor는 cache-first)
+manifest.webmanifest icons/   홈 화면에 앱으로 추가
+tools/sync-apps-script.gs     선생님 구글 시트에 붙이는 Apps Script
 samples/ vendor/      그대로
 ```
 
@@ -43,4 +53,4 @@ samples/ vendor/      그대로
 
 ## 나중에 할 것 (지금은 하지 않음)
 - 드럼 그루브 받아쓰기 (별도 프로젝트)
-- 선생님–학생 숙제·기록 공유
+- 선생님–학생 숙제 내 주기 (기록 공유는 구글 시트로 됨)
